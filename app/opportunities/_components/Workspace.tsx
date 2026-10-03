@@ -36,7 +36,7 @@ function OpportunityCard({ item, reason, saved, onSave, onOpen }: {
     </div>
     <h3 className="mb-2 line-clamp-2 text-lg font-bold leading-snug tracking-[-.03em] text-[#24372b]">{item.title}</h3>
     <p className="mb-4 text-sm text-[#7b897c]">{item.source}</p>
-    <p className="mb-4 line-clamp-3 text-sm leading-6 text-[#526254]">{item.description || "원문에서 상세 내용을 확인해 주세요."}</p>
+    <dl className="mb-4 flex items-center gap-3 rounded-xl bg-[#f7f9f4] px-4 py-3 text-sm"><dt className="font-semibold text-[#638067]">마감일</dt><dd className="font-bold text-[#344638]">{item.deadline ? item.deadline.replaceAll("-", ".") : "원문 확인 필요"}</dd></dl>
     {reason && <p className="mb-4 rounded-xl bg-[#f5f8ec] p-3 text-sm leading-5 text-[#526e3a]">✦ {reason}</p>}
     <div className="mt-auto flex items-center justify-between border-t border-[#eef0e9] pt-4">
       <button type="button" onClick={onOpen} className="text-sm font-bold text-[#286a43] hover:underline">핵심 내용 보기 →</button>
