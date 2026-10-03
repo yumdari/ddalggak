@@ -1,6 +1,6 @@
 import "server-only";
 
-import { ApiError } from "@google/genai";
+import { ApiError, ThinkingLevel } from "@google/genai";
 import { geminiKeys, isDailyQuota, withGeminiKey } from "@/lib/gemini";
 import { rankOpportunities, type Opportunity, type Profile, type Recommendation } from "./catalog";
 
@@ -39,7 +39,10 @@ async function structured<T>(schema: object, instructions: string, input: string
             responseMimeType: "application/json",
             responseJsonSchema: schema,
             maxOutputTokens: 2500,
-            ...(model.startsWith("gemini-2.5-flash") ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
+            // 2.5-flash는 추론을 끄고, 그 밖의 모델(gemini-3.x)은 추론을 낮춰 호출 제한 시간(12초) 안에 끝나게 한다
+            thinkingConfig: model.startsWith("gemini-2.5-flash")
+              ? { thinkingBudget: 0 }
+              : { thinkingLevel: ThinkingLevel.LOW },
             abortSignal: AbortSignal.timeout(12_000),
           },
         }),
