@@ -1,4 +1,5 @@
-import { ApiError, GoogleGenAI, ThinkingLevel } from "@google/genai";
+import { ApiError, ThinkingLevel, type GoogleGenAI } from "@google/genai";
+import { geminiKeys, isDailyQuota, withGeminiKey } from "@/lib/gemini";
 import { MissingKeyError, UnusableOutputError } from "../errors";
 import { tutorSystem, type JsonTask, type TutorMode } from "../prompts";
 import type { ChatMessage } from "../types";
@@ -12,36 +13,15 @@ const FALLBACK_MODELS = (process.env.GEMINI_FALLBACK_MODELS ?? "gemini-3.8-flash
   .map((m) => m.trim())
   .filter(Boolean);
 
-// 키는 쉼표로 여러 개 지정할 수 있다 (GEMINI_API_KEYS). 한 키의 한도가 차거나 막히면 다음 키로 넘어간다.
-// 한도는 구글 프로젝트 단위라, 서로 다른 프로젝트에서 만든 키여야 한도가 따로 계산된다.
-const KEYS = (process.env.GEMINI_API_KEYS ?? process.env.GEMINI_API_KEY ?? "")
-  .split(",")
-  .map((k) => k.trim())
-  .filter(Boolean);
-
-const clients: (GoogleGenAI | undefined)[] = [];
-function getClient(index: number) {
-  return (clients[index] ??= new GoogleGenAI({ apiKey: KEYS[index] }));
-}
-
 function pdfPart(base64: string) {
   return { inlineData: { mimeType: "application/pdf", data: base64 } };
 }
 
-// 무료 티어의 하루 요청 한도(모델·프로젝트당)를 다 쓴 경우
-export function isDailyQuota(e: unknown) {
-  return e instanceof ApiError && e.status === 429 && /PerDay/i.test(e.message);
-}
-
-// 하루 한도가 찬 (모델, 키) 조합은 한동안 건너뛴다. 서버 인스턴스마다 따로 기억한다
-const QUOTA_RECHECK_MS = 30 * 60 * 1000;
-const exhausted = new Map<string, number>();
-const slot = (model: string, key: number) => `${model}#${key}`;
-
-// 모델 순서(기본 → 대체)대로, 모델마다 키 순서대로 시도한다.
-// 한 바퀴를 돌고도 일시 오류(503·429)만 있었다면 잠깐 쉬고 한 바퀴 더 돈다. 404는 그 모델을 건너뛴다.
+// 모델 순서(기본 → 대체)대로 시도한다. 키는 공통 모듈(@/lib/gemini)이 돌려 쓰고, 키 때문에 실패하면 다음 키로 넘긴다.
+// 한 모델의 키가 모두 하루 한도이거나 없는 모델(404)이면 다음 모델로 가고,
+// 한 바퀴를 돌고도 일시 오류(503·429)만 있었다면 잠깐 쉬고 한 바퀴 더 돈다.
 async function generate(params: Parameters<GoogleGenAI["models"]["generateContent"]>[0]) {
-  if (KEYS.length === 0) {
+  if (geminiKeys().length === 0) {
     throw new MissingKeyError("서버에 GEMINI_API_KEYS(또는 GEMINI_API_KEY)가 설정되지 않았어요.");
   }
 
@@ -49,25 +29,18 @@ async function generate(params: Parameters<GoogleGenAI["models"]["generateConten
   for (let pass = 0; pass < 2; pass++) {
     let retryable = false;
     for (const model of [MODEL, ...FALLBACK_MODELS]) {
-      for (let key = 0; key < KEYS.length; key++) {
-        if ((exhausted.get(slot(model, key)) ?? 0) > Date.now()) continue;
-        try {
-          const response = await getClient(key).models.generateContent({ ...params, model });
-          if (model !== MODEL || key !== 0) {
-            console.warn(`[ai] served by model=${model} key=#${key + 1}`);
-          }
-          return response;
-        } catch (e) {
-          lastError = e;
-          if (!(e instanceof ApiError)) throw e;
-          if (e.status === 404) break; // 이 모델은 없다 → 다음 모델
-          if (isDailyQuota(e)) {
-            exhausted.set(slot(model, key), Date.now() + QUOTA_RECHECK_MS);
-            continue;
-          }
-          if (e.status !== 503 && e.status !== 429) throw e;
-          retryable = true;
-        }
+      try {
+        const response = await withGeminiKey(model, (client) =>
+          client.models.generateContent({ ...params, model }),
+        );
+        if (model !== MODEL) console.warn(`[ai] served by fallback model=${model}`);
+        return response;
+      } catch (e) {
+        lastError = e;
+        if (!(e instanceof ApiError)) throw e;
+        if (e.status === 404 || isDailyQuota(e)) continue; // 이 모델은 못 쓴다 → 다음 모델
+        if (e.status !== 503 && e.status !== 429) throw e;
+        retryable = true;
       }
     }
     if (!retryable) break;

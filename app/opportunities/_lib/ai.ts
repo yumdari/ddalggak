@@ -1,6 +1,7 @@
 import "server-only";
 
-import { ApiError, GoogleGenAI } from "@google/genai";
+import { ApiError, ThinkingLevel } from "@google/genai";
+import { geminiKeys, isDailyQuota, withGeminiKey } from "@/lib/gemini";
 import { rankOpportunities, type Opportunity, type Profile, type Recommendation } from "./catalog";
 
 type GroundedField = { text: string; evidence: string };
@@ -22,42 +23,35 @@ const FIELD_SCHEMA = {
   required: ["text", "evidence"],
 };
 
-let client: GoogleGenAI | null = null;
-
-function geminiClient(key: string): GoogleGenAI {
-  if (!client) {
-    client = new GoogleGenAI({
-      apiKey: key,
-      ...(process.env.OPPORTUNITIES_GEMINI_BASE_URL
-        ? { httpOptions: { baseUrl: process.env.OPPORTUNITIES_GEMINI_BASE_URL } }
-        : {}),
-    });
-  }
-  return client;
-}
-
 async function structured<T>(schema: object, instructions: string, input: string): Promise<T | null> {
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) return null;
+  if (geminiKeys().length === 0) return null;
   const model = process.env.OPPORTUNITIES_GEMINI_MODEL || "gemini-2.5-flash";
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const response = await geminiClient(key).models.generateContent({
+      // 키는 공통 모듈(@/lib/gemini)이 GEMINI_API_KEYS에서 돌려 쓰고, 한도·과부하면 다음 키로 넘긴다
+      const response = await withGeminiKey(
         model,
-        contents: input,
-        config: {
-          systemInstruction: instructions,
-          responseMimeType: "application/json",
-          responseJsonSchema: schema,
-          maxOutputTokens: 2500,
-          ...(model.startsWith("gemini-2.5-flash") ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
-          abortSignal: AbortSignal.timeout(12_000),
-        },
-      });
+        (client) => client.models.generateContent({
+          model,
+          contents: input,
+          config: {
+            systemInstruction: instructions,
+            responseMimeType: "application/json",
+            responseJsonSchema: schema,
+            maxOutputTokens: 2500,
+            // 2.5-flash는 추론을 끄고, 그 밖의 모델(gemini-3.x)은 추론을 낮춰 호출 제한 시간(12초) 안에 끝나게 한다
+            thinkingConfig: model.startsWith("gemini-2.5-flash")
+              ? { thinkingBudget: 0 }
+              : { thinkingLevel: ThinkingLevel.LOW },
+            abortSignal: AbortSignal.timeout(12_000),
+          },
+        }),
+        { baseUrl: process.env.OPPORTUNITIES_GEMINI_BASE_URL || undefined },
+      );
       if (!response.text || response.candidates?.[0]?.finishReason === "MAX_TOKENS") return null;
       return JSON.parse(response.text) as T;
     } catch (error) {
-      if (!(error instanceof ApiError) || ![429, 503].includes(error.status) || attempt > 0) {
+      if (!(error instanceof ApiError) || ![429, 503].includes(error.status) || isDailyQuota(error) || attempt > 0) {
         return null;
       }
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -79,7 +73,7 @@ export async function analyzeOpportunity(opportunity: Opportunity): Promise<Anal
   const source = `${opportunity.title}\n${opportunity.description}`;
   const fallback: Analysis = {
     mode: "source",
-    fallbackReason: !opportunity.description ? "no-text" : !process.env.GEMINI_API_KEY ? "missing-key" : "unavailable",
+    fallbackReason: !opportunity.description ? "no-text" : geminiKeys().length === 0 ? "missing-key" : "unavailable",
     overview: { text: opportunity.description.slice(0, 1200) || opportunity.title, evidence: "" },
     eligibility: EMPTY, field: EMPTY, benefits: EMPTY, schedule: EMPTY, deliverables: EMPTY,
   };
