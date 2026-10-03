@@ -1,9 +1,9 @@
 import "server-only";
 
 import { createHash } from "node:crypto";
-import { classifyField, extractDeadline, type Opportunity } from "./catalog";
+import { classifyField, extractDeadline, type Opportunity, type OpportunityCategory } from "./catalog";
 
-type FeedSource = { name: string; url: string; homepage: string };
+type FeedSource = { name: string; url: string; homepage: string; category: OpportunityCategory };
 
 // Public RSS links published by the source institutions. Add sources only after checking use conditions.
 export const FEED_SOURCES: FeedSource[] = [
@@ -11,11 +11,13 @@ export const FEED_SOURCES: FeedSource[] = [
     name: "인천대학교 대외활동·공모전",
     url: "https://itcenter.inu.ac.kr/bbs/shinbang/327/rssList.do?row=50",
     homepage: "https://itcenter.inu.ac.kr/shinbang/2542/subview.do",
+    category: "contest",
   },
   {
     name: "가천대학교 장학공지",
     url: "https://www.gachon.ac.kr/bbs/kor/478/rssList.do?row=50",
     homepage: "https://www.gachon.ac.kr/kor/1146/subview.do",
+    category: "scholarship",
   },
 ];
 
@@ -78,7 +80,8 @@ export function parseRss(xml: string, source: FeedSource): Opportunity[] {
       sourceUrl: link,
       publishedAt,
       deadline: extractDeadline(`${title} ${description}`),
-      field: classifyField(`${title} ${description}`),
+      category: source.category,
+      field: classifyField(`${title} ${description}`, source.category),
       description,
     });
   }

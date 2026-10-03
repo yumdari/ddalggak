@@ -6,32 +6,59 @@ export type Opportunity = {
   publishedAt: string | null;
   deadline: string | null;
   field: string;
+  category: OpportunityCategory;
   description: string;
+};
+
+export type OpportunityCategory = "contest" | "scholarship";
+export const CATEGORY_LABELS: Record<OpportunityCategory, string> = {
+  contest: "공모전·대외활동",
+  scholarship: "장학정보",
 };
 
 export type SearchOptions = {
   query?: string;
   field?: string;
+  category?: OpportunityCategory | "all";
   deadline?: "all" | "known" | "week";
   sort?: "recent" | "deadline";
   now?: Date;
 };
 
-const FIELD_TERMS: Record<string, string[]> = {
-  "디자인·콘텐츠": ["디자인", "영상", "콘텐츠", "광고", "미디어", "사진", "웹툰"],
-  "AI·데이터": ["AI", "인공지능", "데이터", "소프트웨어", "개발", "코딩", "해커톤"],
-  "창업·아이디어": ["창업", "아이디어", "비즈니스", "스타트업", "기획"],
-  "사회·환경": ["환경", "기후", "사회", "정책", "봉사", "지속가능"],
-  "장학·연구": ["장학", "연구", "학술", "논문", "대학원"],
+const FIELD_TERMS: Record<OpportunityCategory, Record<string, string[]>> = {
+  contest: {
+    "AI·데이터": ["AI", "인공지능", "데이터", "통계", "분석"],
+    "개발·SW": ["해커톤", "개발", "코딩", "소프트웨어", "앱", "프로그래밍"],
+    "디자인·시각": ["디자인", "시각", "포스터", "사진", "일러스트"],
+    "영상·콘텐츠": ["영상", "콘텐츠", "숏폼", "광고", "미디어", "웹툰", "영화"],
+    "기획·아이디어": ["기획", "아이디어", "제안", "캠페인"],
+    "창업·비즈니스": ["창업", "스타트업", "비즈니스", "마케팅"],
+    "사회·환경": ["환경", "기후", "봉사", "지속가능", "ESG", "공익"],
+    "인문·글쓰기": ["글쓰기", "문학", "에세이", "시나리오", "카피"],
+    "과학·연구": ["과학", "연구", "논문", "학술", "화학"],
+  },
+  scholarship: {
+    "생활비 지원": ["생활비", "학업지원금", "학업장려", "생활지원"],
+    "등록금 지원": ["등록금", "수업료", "학비", "전액장학"],
+    "성적·학업": ["성적", "학업우수", "성취", "우수학생"],
+    "지역인재": ["지역인재", "지역 장학", "향토", "지자체"],
+    "복지·가계": ["저소득", "가계", "차상위", "기초생활", "한부모", "다자녀", "돌봄", "산재"],
+    "전공특화": ["전공", "이공계", "공과", "화공", "생명과학", "바이오", "예체능", "약학"],
+    "국제·유학": ["유학", "해외", "외국인", "교환학생", "글로벌"],
+    "연구·대학원": ["대학원", "석사", "박사", "연구장학", "논문"],
+  },
 };
 
-export const FIELDS = Object.keys(FIELD_TERMS);
+export const FIELDS = {
+  contest: Object.keys(FIELD_TERMS.contest),
+  scholarship: Object.keys(FIELD_TERMS.scholarship),
+};
 
-export function classifyField(text: string): string {
+export function classifyField(text: string, category: OpportunityCategory = "contest"): string {
   const lower = text.toLocaleLowerCase("ko");
   let best = "기타";
   let bestScore = 0;
-  for (const [field, terms] of Object.entries(FIELD_TERMS)) {
+  for (const [field, terms] of Object.entries(FIELD_TERMS[category])) {
     const score = terms.filter((term) => lower.includes(term.toLocaleLowerCase("ko"))).length;
     if (score > bestScore) {
       best = field;
@@ -77,6 +104,7 @@ export function searchOpportunities(items: Opportunity[], options: SearchOptions
     if (days !== null && days < 0) return false;
     if (query && !`${item.title} ${item.description} ${item.source}`.toLocaleLowerCase("ko").includes(query)) return false;
     if (options.field && options.field !== "all" && item.field !== options.field) return false;
+    if (options.category && options.category !== "all" && item.category !== options.category) return false;
     if (options.deadline === "known" && days === null) return false;
     if (options.deadline === "week" && (days === null || days > 7)) return false;
     return true;

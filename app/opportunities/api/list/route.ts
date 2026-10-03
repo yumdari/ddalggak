@@ -4,11 +4,13 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const query = (url.searchParams.get("q") ?? "").slice(0, 100);
   const field = (url.searchParams.get("field") ?? "all").slice(0, 50);
+  const category = url.searchParams.get("category") ?? "all";
   const deadline = url.searchParams.get("deadline") ?? "all";
   const sort = url.searchParams.get("sort") ?? "recent";
   try {
     const items = await listOpportunities({
       query, field,
+      category: category === "contest" || category === "scholarship" ? category : "all",
       deadline: deadline === "week" || deadline === "known" ? deadline : "all",
       sort: sort === "deadline" ? "deadline" : "recent",
     });
