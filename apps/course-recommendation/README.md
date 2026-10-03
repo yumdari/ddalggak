@@ -2,6 +2,8 @@
 
 AI Builder Challenge 2026 수강전략 MVP. **성향 입력 → 과목 추천 → 수강 성공/실패 → 대체 조합**을 제공합니다.
 
+프론트엔드는 메인 앱 `app/course-plan/`으로 통합되었습니다. `frontend/`는 기존 브라우저 테스트와 루트 앱 실행 위임 스크립트를 보관합니다. 메인 페이지의 수강신청 시작하기 또는 `/course-plan`에서 이용하세요.
+
 ## 구현 범위
 
 - Next.js 16 / TypeScript / Tailwind CSS 4 → FastAPI / Pydantic → 결정론적 Python 추천엔진
@@ -21,6 +23,7 @@ Node.js 20.9 이상(검증 환경 24), Python 3.12가 필요합니다.
 cd apps/course-recommendation
 python -m venv .venv
 .venv/Scripts/python.exe -m pip install -r backend/requirements-dev.lock.txt
+npm --prefix ../.. ci
 npm --prefix frontend ci
 ./scripts/dev.ps1
 ```
@@ -38,7 +41,7 @@ npm --prefix frontend ci
 npm --prefix frontend run dev
 ```
 
-환경변수 예시는 `backend/.env.example`, `frontend/.env.example`을 참고하세요. Backend의 `.env`는 Backend 폴더에서 실행하면 자동 로드됩니다. 루트 실행 시 루트 `.env` 또는 프로세스 환경변수로 설정하세요. Key 없이도 동작하는 대체 설명이 기본입니다.
+환경변수 예시는 `backend/.env.example`, 저장소 루트 `.env.example`을 참고하세요. Next.js의 `BACKEND_URL`은 저장소 루트 `.env.local`에 설정합니다. Backend의 `.env`는 Backend 폴더에서 실행하면 자동 로드됩니다. 루트 실행 시 루트 `.env` 또는 프로세스 환경변수로 설정하세요. Key 없이도 동작하는 대체 설명이 기본입니다.
 
 ## 검증
 
@@ -65,7 +68,7 @@ Pop-Location
 2. Render에서 Blueprint 파일 경로를 `apps/course-recommendation/render.yaml`로 지정합니다. 배포할 작업 브랜치(`feat/sugang`)를 선택합니다. Backend root는 `apps/course-recommendation/backend`, health check는 `/health`입니다.
 3. AI를 켜려면 Render 환경변수에 `OPENAI_API_KEY`를 넣습니다. 생략하면 템플릿 설명으로 동작합니다.
 4. Render URL의 `/health`와 `/api/courses`를 확인합니다.
-5. Vercel에서 이 저장소를 import하고 Root Directory를 **apps/course-recommendation/frontend**, Framework를 **Next.js**로 선택합니다.
+5. Vercel에서 이 저장소를 import하고 Root Directory를 **저장소 루트 (`.`)**, Framework를 **Next.js**로 선택합니다.
 6. Vercel 서버 환경변수 **BACKEND_URL**에 Render URL(`https://…onrender.com`, `/api` 제외)을 입력합니다.
 7. Vercel 배포 URL에서 Persona A/B와 수강 실패 복구를 검증합니다. 성공 과목 유지와 실패 과목 제외를 확인합니다.
 

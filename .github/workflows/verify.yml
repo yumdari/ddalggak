@@ -36,6 +36,8 @@ jobs:
       - run: pytest -q
         working-directory: apps/course-recommendation/backend
       - run: npm ci
+        working-directory: .
+      - run: npm ci
         working-directory: apps/course-recommendation/frontend
       - run: npm run lint
         working-directory: apps/course-recommendation/frontend
@@ -50,7 +52,7 @@ jobs:
           uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 > /tmp/ddalggak-api.log 2>&1 &
           npm --prefix frontend run start > /tmp/ddalggak-web.log 2>&1 &
           for i in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:3000/api/courses > /dev/null; then break; fi
+            if curl -fsS http://127.0.0.1:3000/course-plan/api/courses > /dev/null; then break; fi
             sleep 2
           done
           npm --prefix frontend run test:e2e

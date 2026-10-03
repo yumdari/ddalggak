@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowRight, ArrowLeft, ArrowUpRight, Check, ChevronDown, Compass, GraduationCap, Layers, Leaf, LoaderCircle, RotateCcw, ShieldCheck, Sparkles, X } from "lucide-react";
-import { baseProfile, persona } from "@/lib/profile";
-import type { CampusKey, Course, Day, LearningKey, Profile, Result } from "@/lib/types";
+import { baseProfile, persona } from "./_lib/profile";
+import type { CampusKey, Course, Day, LearningKey, Profile, Result } from "./_lib/types";
 
 const steps = ["기본 정보", "나의 진로", "학습 성향", "시간표 선호", "대학생활 계획", "Campus Life"];
 const careers = ["Embedded Software", "Backend", "Frontend", "AI/ML", "Data", "Game", "System Software", "Graduate School", "아직 모름", "직접 입력"];
@@ -40,7 +41,7 @@ export default function Home() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/courses", { signal: AbortSignal.timeout(60_000) }).then(async r => {
+    fetch("/course-plan/api/courses", { signal: AbortSignal.timeout(60_000) }).then(async r => {
       if (!r.ok) throw new Error("catalog");
       const data = await r.json();
       if (!cancelled) { setCourses(data.courses); setCatalogState("ready"); }
@@ -59,7 +60,7 @@ export default function Home() {
     const recovery = Boolean(failedCourse || successfulOverride);
     const body = { profile, successful_ids: successfulOverride ?? (recovery ? result?.successful_ids ?? [] : []), failed_ids: recovery ? result?.failed_ids ?? [] : [], current_ids: recovery ? result?.recommendations.map(r => r.course.course_id) ?? [] : [], ...(failedCourse ? { failed_course_id: failedCourse } : {}) };
     try {
-      const response = await fetch(failedCourse ? "/api/recommend/alternative" : "/api/recommend", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal: AbortSignal.timeout(60_000) });
+      const response = await fetch(failedCourse ? "/course-plan/api/recommend/alternative" : "/course-plan/api/recommend", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal: AbortSignal.timeout(60_000) });
       const data = await response.json();
       if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "입력값을 확인해 주세요. 학점과 학년 등 허용 범위를 벗어났습니다.");
       setResult(data); setView("result");
@@ -74,7 +75,7 @@ export default function Home() {
   }
 
   return <div className="site">
-    <header className="site-header"><button className="brand" onClick={() => { setView("landing"); setError(""); }} aria-label="딸깍 홈"><span className="brand-icon"><Layers size={21} /></span>딸깍<span className="brand-dot">.</span></button><span className="header-caption">YOUR NEXT SEMESTER, REIMAGINED</span><span className="demo-badge"><span />AI BUILD DEMO</span></header>
+    <header className="site-header"><button className="brand" onClick={() => { setView("landing"); setError(""); }} aria-label="딸깍 홈"><span className="brand-icon"><Layers size={21} /></span>딸깍<span className="brand-dot">.</span></button><Link className="header-caption" href="/">← 전체 서비스</Link><span className="demo-badge"><span />AI BUILD DEMO</span></header>
     <main>
       {view === "landing" && <>
         <section className="hero"><div className="hero-copy"><span className="eyebrow"><Sparkles size={14} /> 나만의 수강전략 메이커</span><h1>좋은 강의 말고,<br /><span>나에게 좋은 강의.</span></h1><p className="hero-description">너의 진로, 공부 스타일, 그리고 대학생활까지.<br />이번 학기는 남들의 추천 대신<br className="mobile-break" /> 나만의 기준으로 골라봐.</p><button className="primary hero-cta" onClick={() => start()}>내 수강전략 만들기 <ArrowUpRight size={20} /></button><p className="cta-note">로그인 없이 시작 · 약 3분이면 충분해요</p><div className="hero-proof"><span><ShieldCheck size={16} /> 시간 충돌 자동 확인</span><span><RotateCcw size={16} /> 수강 실패에도 Plan B</span></div></div>

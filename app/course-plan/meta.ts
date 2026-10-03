@@ -5,7 +5,7 @@ export const service: ServiceMeta = {
   no: "02",
   name: "수강신청·학사 일정 도우미",
   summary: "수강신청 플랜 A·B·C를 만들고, 마감된 과목이 생기면 다음 플랜을 바로 안내해 줘요.",
-  status: "soon",
+  status: "ready",
   features: [
     { id: "FR-05", title: "학사 일정 알림", required: true },
     { id: "FR-06", title: "수강신청 플랜 A·B·C 생성", required: true },

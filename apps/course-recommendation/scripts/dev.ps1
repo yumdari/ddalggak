@@ -10,7 +10,7 @@ if (-not (Test-Path -LiteralPath $pythonPath)) { throw '먼저 README의 Python 
 $env:BACKEND_URL = "http://127.0.0.1:$BackendPort"
 $apiProcess = Start-Process -FilePath $pythonPath -ArgumentList @('-m','uvicorn','app.main:app','--app-dir','backend','--host','127.0.0.1','--port',"$BackendPort") -WorkingDirectory $repoPath -WindowStyle Hidden -PassThru
 try {
-    Push-Location (Join-Path $repoPath 'frontend')
+    Push-Location (Split-Path -Parent (Split-Path -Parent $repoPath))
     npm run dev -- --port $FrontendPort
 } finally {
     Pop-Location
