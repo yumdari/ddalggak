@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { MAX_PDF_MB } from "@/app/study/_lib/limits";
 
 export const NOTICE = "AI가 만든 내용은 틀릴 수 있어요. 중요한 내용은 원문에서 꼭 확인하세요.";
 
@@ -16,7 +17,7 @@ export default function Upload({ loadingName, error, onFile, onSample }: Props) 
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-5 py-16">
+    <main className="panel-in mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-5 py-16">
       <h1 className="text-center text-3xl font-bold tracking-tight">강의자료 PDF를 올려 보세요</h1>
       <p className="mt-3 text-center text-muted">
         먼저 요약을 만들어 드려요. 핵심 개념, 플래시카드, 퀴즈는 탭을 열 때 바로 만들어요.
@@ -50,7 +51,7 @@ export default function Upload({ loadingName, error, onFile, onSample }: Props) 
             }`}
           >
             <p className="text-lg font-medium">PDF를 끌어다 놓거나 눌러서 선택</p>
-            <p className="mt-2 text-sm text-muted">4MB 이하의 PDF 파일</p>
+            <p className="mt-2 text-sm text-muted">{MAX_PDF_MB}MB 이하의 PDF 파일</p>
           </button>
 
           <button

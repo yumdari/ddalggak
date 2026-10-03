@@ -1,5 +1,5 @@
 import { analyzePdf } from "@/app/study/_lib/ai";
-import { MAX_PDF_BYTES } from "@/app/study/_lib/config";
+import { MAX_PDF_BYTES, MAX_PDF_MB } from "@/app/study/_lib/limits";
 import { errorResponse } from "@/app/study/_lib/errors";
 
 export const maxDuration = 60;
@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     return Response.json({ error: "PDF 파일만 올릴 수 있어요." }, { status: 400 });
   }
   if (file.size > MAX_PDF_BYTES) {
-    return Response.json({ error: "4MB 이하의 PDF만 올릴 수 있어요." }, { status: 413 });
+    return Response.json({ error: `${MAX_PDF_MB}MB 이하의 PDF만 올릴 수 있어요.` }, { status: 413 });
   }
 
   try {
