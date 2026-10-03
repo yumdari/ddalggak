@@ -22,18 +22,19 @@ const FIELD_SCHEMA = {
   required: ["text", "evidence"],
 };
 
-let client: GoogleGenAI | null = null;
+const clientCache = new Map<string, GoogleGenAI>();
 
 function geminiClient(key: string): GoogleGenAI {
-  if (!client) {
-    client = new GoogleGenAI({
-      apiKey: key,
-      ...(process.env.OPPORTUNITIES_GEMINI_BASE_URL
-        ? { httpOptions: { baseUrl: process.env.OPPORTUNITIES_GEMINI_BASE_URL } }
-        : {}),
-    });
-  }
-  return client;
+  const cached = clientCache.get(key);
+  if (cached) return cached;
+  const instance = new GoogleGenAI({
+    apiKey: key,
+    ...(process.env.OPPORTUNITIES_GEMINI_BASE_URL
+      ? { httpOptions: { baseUrl: process.env.OPPORTUNITIES_GEMINI_BASE_URL } }
+      : {}),
+  });
+  clientCache.set(key, instance);
+  return instance;
 }
 
 async function structured<T>(schema: object, instructions: string, input: string): Promise<T | null> {
