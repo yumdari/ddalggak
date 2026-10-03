@@ -1,5 +1,13 @@
 # P0 검증 기록
 
+## 프로젝트 분리 (#7)
+
+- 앱 소스/문서/스크립트/배포 설정을 `apps/course-recommendation/`으로 이동
+- 공용 GitHub Actions, Render rootDir, Vercel 안내와 실행 경로 갱신
+- 개발 지시서와 공용 Git 설정 유지, 기존 루트 Python 가상환경 재사용 지원
+- 이동 후 Backend 46개 테스트, Ruff, Frontend lint/typecheck/production build 통과
+- PowerShell 실행 스크립트 문법 검사 및 이동한 서버의 API proxy 응답 확인
+
 검증 날짜: 2026-10-03 (Asia/Seoul)
 
 ## 로컬 결과

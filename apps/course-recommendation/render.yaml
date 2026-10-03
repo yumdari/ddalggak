@@ -3,7 +3,7 @@ services:
     name: ddalggak-api
     runtime: python
     plan: free
-    rootDir: backend
+    rootDir: apps/course-recommendation/backend
     buildCommand: pip install -r requirements.lock.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
