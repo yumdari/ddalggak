@@ -24,28 +24,41 @@ const ANALYSIS_SCHEMA = {
   properties: {
     title: str,
     overview: str,
-    sections: list(["heading", "points"], {
+    sections: list(["heading", "points", "takeaway", "easy"], {
       heading: str,
       points: list(["text", "pages"], {
         text: str,
         pages: { type: "array", items: { type: "integer" } },
       }),
+      takeaway: str,
+      easy: str,
     }),
   },
 } as const;
 
-const ANALYZE_PROMPT = `첨부된 강의자료 PDF를 학생이 시험 대비에 쓸 수 있게 요약해 주세요. 모든 내용은 자료에 있는 것만 바탕으로 한국어로 쓰세요.
+const ANALYZE_PROMPT = `첨부된 강의자료 PDF를 학생이 시험 대비에 쓸 수 있도록 꼼꼼하게 요약해 주세요. 모든 내용은 자료에 있는 것만 바탕으로 한국어로 쓰고, 자료에 나온 내용을 빠뜨리거나 얼버무리지 마세요.
 
+[전체 구성]
 - title: 자료 제목 (한 줄)
-- overview: 전체 내용을 2~3문장으로 요약
-- sections: 자료의 흐름에 따른 4~8개 섹션. 각 섹션은 heading과 핵심 항목 2~5개(points)
-- points[].text: 핵심 내용 한두 문장. 중요한 용어는 **용어**처럼 별표 두 개로 감싸 강조
-- points[].pages: 그 내용이 나온 PDF 페이지 번호들. 첫 페이지를 1로 세는 순번이며 슬라이드에 적힌 번호가 아니다. 모르면 빈 배열`;
+- overview: 이 강의가 무엇을 다루고 핵심 주장이 무엇인지 2~3문장
+- sections: 강의 흐름에 따른 4~6개 섹션 (자료가 길수록 많이). heading은 짧은 주제어. 표지·목차·복습 슬라이드는 짧게 다루고 본론을 자세히 다룬다. 자료의 마지막 슬라이드까지 빠짐없이 훑어서 모든 핵심 내용이 어느 섹션엔가 들어가야 한다
+
+[각 섹션]
+- points: 핵심 항목 5~8개. 각 항목(text)은 최소 2~3문장, 150자 이상으로 충분히 자세히 쓴다. 한 줄짜리 항목은 안 된다.
+  · 자료에 나온 구체적인 예시, 수치, 데이터셋 이름(예: Iris, Boston Housing), 계산 예, 그림이 보여주는 내용, 정의, 조건을 그대로 포함한다. 예시가 있는 슬라이드는 반드시 그 예시를 항목으로 만든다.
+  · 중요한 용어는 **용어**처럼 별표 두 개로 감싼다.
+  · 수식은 LaTeX로 쓴다. 문장 속 수식은 $...$, 독립된 수식은 줄을 바꿔 $$...$$ 로 쓴다. 수식을 말로 풀어쓰지 말고 반드시 수식으로 적는다.
+  · 순서가 있는 절차나 분류는 text 안에서 "1. ", "2. " 번호 목록으로 쓸 수 있다.
+  · pages: 그 항목의 내용이 나온 PDF 페이지 번호들. 첫 페이지를 1로 세는 순번이며 슬라이드에 적힌 번호가 아니다. 모르면 빈 배열
+- takeaway: 이 섹션에서 꼭 기억할 핵심을 한 문장으로 (**굵게** 가능)
+- easy: 같은 내용을 처음 배우는 사람에게 설명하듯 풀어 쓴 쉬운 설명. 일상의 비유와 이 섹션의 구체적인 예를 들어 2~3문단, 300자 이상, "~해요" 말투. 가장 중요한 한 문장은 **굵게**. 필요하면 $...$ 수식도 쓴다.
+
+[JSON 주의] 문자열 안에서 LaTeX의 백슬래시는 JSON 규칙에 따라 반드시 두 번 쓴다 (예: "\\\\theta", "\\\\frac{a}{b}", "\\\\begin{bmatrix}").`;
 
 export const analyzeTask: JsonTask = {
   prompt: ANALYZE_PROMPT,
   schema: ANALYSIS_SCHEMA,
-  maxTokens: 12000,
+  maxTokens: 24000,
 };
 
 // ── 핵심 개념 ─────────────────────────────────────────

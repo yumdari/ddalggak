@@ -3,6 +3,7 @@
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
+import remarkCjkFriendly from "remark-cjk-friendly";
 import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
 import "./markdown.css";
@@ -17,11 +18,12 @@ function normalizeMath(text: string) {
     .replace(/\$\$([\s\S]+?)\$\$/g, (_, m) => `\n\n$$\n${m.trim()}\n$$\n\n`);
 }
 
-// 마크다운(굵게·목록·표·코드)과 LaTeX 수식($...$, $$...$$)을 화면에 그린다
-export default function Markdown({ children }: { children: string }) {
+// 마크다운(굵게·목록·표·코드)과 LaTeX 수식($...$, $$...$$)을 화면에 그린다.
+// remark-cjk-friendly: "**벡터(Vector)**를"처럼 닫는 ** 뒤에 한글이 바로 붙어도 굵게 처리한다
+export default function Markdown({ children, tight }: { children: string; tight?: boolean }) {
   return (
-    <div className="md">
-      <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>
+    <div className={tight ? "md tight" : "md"}>
+      <ReactMarkdown remarkPlugins={[remarkCjkFriendly, remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>
         {normalizeMath(children)}
       </ReactMarkdown>
     </div>

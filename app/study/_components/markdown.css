@@ -23,3 +23,8 @@
 .md hr { margin: 1em 0; border: 0; border-top: 1px solid var(--line); }
 .md a { text-decoration: underline; text-underline-offset: 3px; }
 .md .katex-display { margin: 0.8em 0; overflow-x: auto; overflow-y: hidden; }
+
+/* 목록 항목 안에서 쓸 때 바깥 여백을 없앤다 */
+.md.tight p { margin: 0.4em 0; }
+.md.tight > :first-child { margin-top: 0; }
+.md.tight > :last-child { margin-bottom: 0; }

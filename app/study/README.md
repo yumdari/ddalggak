@@ -13,10 +13,14 @@
 ## 환경변수 (`.env.local`)
 
 - `AI_PROVIDER`: `gemini`(기본) 또는 `claude`
-- `GEMINI_API_KEY` / `GEMINI_MODEL`: 모델명은 AI Studio에서 쓸 수 있는 것으로 (기본 `gemini-3.8-flash`)
-- `GEMINI_FALLBACK_MODELS`: 기본 모델이 붐비면(503·429) 순서대로 넘어갈 대체 모델 (쉼표로 구분, 기본 `gemini-3.6-flash,gemini-3.1-flash-lite`)
+- `GEMINI_API_KEY` / `GEMINI_MODEL`: 모델명은 AI Studio에서 쓸 수 있는 것으로 (기본 `gemini-3.5-flash`)
+- `GEMINI_FALLBACK_MODELS`: 기본 모델이 붐비면(503·429) 순서대로 넘어갈 대체 모델 (쉼표로 구분, 기본 `gemini-3.8-flash,gemini-3.6-flash,gemini-3.1-flash-lite`)
 - `ANTHROPIC_API_KEY` / `ANTHROPIC_MODEL`: `AI_PROVIDER=claude`일 때
 - `MOCK_AI=1`: AI를 호출하지 않고 샘플 데이터로 화면만 확인. **실제 키를 쓸 때는 반드시 지울 것.**
+
+## 무료 티어 주의
+
+Gemini 무료 키는 **모델마다 하루 20요청**이다 (요약·개념·카드·퀴즈·튜터 질문이 각각 1요청). 한도를 넘으면 429가 나고 대체 모델로 넘어가며, 모두 소진되면 "오늘 사용할 수 있는 AI 사용량을 모두 썼어요"가 나온다. 개발 중 화면 확인은 `MOCK_AI=1`로 하고, 시연 전에는 결제(과금)를 켠 키나 Claude 키를 쓰는 것을 권한다.
 
 ## 샘플
 

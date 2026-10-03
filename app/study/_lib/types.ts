@@ -1,5 +1,6 @@
 export type Point = { text: string; pages: number[] };
-export type Section = { heading: string; points: Point[] };
+// takeaway(핵심 한 줄)와 easy(쉬운 설명)는 이전 버전으로 저장된 문서에는 없다
+export type Section = { heading: string; points: Point[]; takeaway?: string; easy?: string };
 export type Concept = { term: string; definition: string };
 export type QuizItem = {
   question: string;
