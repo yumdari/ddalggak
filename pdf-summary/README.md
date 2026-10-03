@@ -6,18 +6,21 @@
 
 ```bash
 npm install
-cp .env.example .env.local   # ANTHROPIC_API_KEY 입력
+cp .env.example .env.local   # GEMINI_API_KEY 입력
 npm run dev                  # http://localhost:3000
 ```
 
-API 키 없이 화면만 확인하려면 `.env.local`에 `MOCK_AI=1`.
+- AI는 `AI_PROVIDER`로 고른다: `gemini`(기본) 또는 `claude` (키: `GEMINI_API_KEY` / `ANTHROPIC_API_KEY`)
+- 모델명은 `GEMINI_MODEL` / `ANTHROPIC_MODEL`로 바꾼다 (Gemini 기본 `gemini-2.5-flash`는 AI Studio에서 사용 가능한지 확인)
+- API 키 없이 화면만 확인하려면 `.env.local`에 `MOCK_AI=1`. **실제 키를 쓸 때는 반드시 지울 것.**
 
 ## 구조
 
 - `app/page.tsx` 랜딩 · `app/workspace/` 작업 화면
-- `app/api/analyze` PDF → 요약/개념/퀴즈/카드 (Claude, 구조화 출력)
+- `app/api/analyze` PDF → 요약/개념/퀴즈/카드 (구조화 JSON 출력)
 - `app/api/tutor` 자료 기반 질의응답
-- `components/` 탭별 UI · `lib/` AI 호출·스키마·타입
+- `components/` 탭별 UI
+- `lib/ai.ts` 제공자 선택 · `lib/providers/{gemini,claude}.ts` 호출 구현 · `lib/prompts.ts` 프롬프트와 스키마
 
 ## 제한 · 추후 구현
 
