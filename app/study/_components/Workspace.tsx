@@ -54,6 +54,18 @@ export default function Workspace() {
     setOpen({ doc, pdfUrl: URL.createObjectURL(doc.pdf), pdfBase64: await toBase64(doc.pdf) });
   }
 
+  // 열려 있던 문서의 최신 내용을 목록에 합친다 (다른 문서로 가거나 목록으로 돌아갈 때)
+  function leaveCurrent() {
+    if (!open) return;
+    setDocs((list) => list?.map((d) => (d.id === open.doc.id ? open.doc : d)) ?? list);
+  }
+
+  async function switchDoc(target: StoredDoc) {
+    if (target.id === open?.doc.id) return;
+    leaveCurrent();
+    await openDoc(target);
+  }
+
   async function handleFile(file: File) {
     if (file.type !== "application/pdf") {
       setError("PDF 파일만 올릴 수 있어요.");
@@ -122,11 +134,19 @@ export default function Workspace() {
       <DocView
         key={open.doc.id}
         doc={open.doc}
+        docs={(docs ?? []).map((d) => (d.id === open.doc.id ? open.doc : d))}
         pdfUrl={open.pdfUrl}
         pdfBase64={open.pdfBase64}
         onUpdate={updateDoc}
+        onSwitch={switchDoc}
+        onNew={() => {
+          leaveCurrent();
+          setOpen(null);
+          setError(null);
+          setView("upload");
+        }}
         onBack={() => {
-          setDocs((list) => list?.map((d) => (d.id === open.doc.id ? open.doc : d)) ?? list);
+          leaveCurrent();
           setOpen(null);
           setView("library");
         }}

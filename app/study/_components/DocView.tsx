@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Concept, Flashcard, QuizItem, StoredDoc } from "@/app/study/_lib/types";
 import Concepts from "./Concepts";
+import DocSidebar from "./DocSidebar";
 import Flashcards from "./Flashcards";
 import LazyPanel, { type LoadState } from "./LazyPanel";
 import Quiz, { type QuizStatus } from "./Quiz";
@@ -16,9 +17,12 @@ type AidKind = "concepts" | "flashcards";
 
 type Props = {
   doc: StoredDoc;
+  docs: StoredDoc[]; // 사이드바에 보여줄 전체 문서
   pdfUrl: string;
   pdfBase64: string;
   onBack: () => void;
+  onSwitch: (doc: StoredDoc) => void;
+  onNew: () => void;
   onUpdate: (patch: Partial<StoredDoc>) => void;
 };
 
@@ -33,10 +37,26 @@ async function post<T>(url: string, body: unknown, fallback: string): Promise<T>
   return json as T;
 }
 
-export default function DocView({ doc, pdfUrl, pdfBase64, onBack, onUpdate }: Props) {
+export default function DocView({
+  doc,
+  docs,
+  pdfUrl,
+  pdfBase64,
+  onBack,
+  onSwitch,
+  onNew,
+  onUpdate,
+}: Props) {
   const [tab, setTab] = useState<Tab>("요약");
   const [page, setPage] = useState<{ n: number; jump: number } | null>(null);
   const [showPdf, setShowPdf] = useState(false); // 좁은 화면에서 원본 보기
+  // 넓은 화면에서는 처음부터 열어 두고, 좁은 화면에서는 닫아 둔다
+  const [sidebarOpen, setSidebarOpen] = useState(
+    () => typeof window !== "undefined" && window.innerWidth >= 1024,
+  );
+  const closeOnMobile = () => {
+    if (window.innerWidth < 1024) setSidebarOpen(false);
+  };
   const [aids, setAids] = useState<Record<AidKind, LoadState>>({
     concepts: { status: "idle" },
     flashcards: { status: "idle" },
@@ -95,88 +115,114 @@ export default function DocView({ doc, pdfUrl, pdfBase64, onBack, onUpdate }: Pr
   const title = doc.analysis.title || doc.name;
 
   return (
-    <div className="flex h-dvh flex-col">
-      <header className="flex items-center gap-3 border-b border-line px-4 py-3 text-sm">
-        <button onClick={onBack} className="shrink-0 text-muted hover:text-foreground">
-          ← 내 문서
-        </button>
-        <span className="min-w-0 flex-1 truncate font-medium">{title}</span>
-        <button
-          onClick={() => setShowPdf((v) => !v)}
-          className="shrink-0 rounded-full bg-soft px-3 py-1.5 text-xs font-medium lg:hidden"
-        >
-          {showPdf ? "학습 화면" : "원본 보기"}
-        </button>
-      </header>
+    <div className="flex h-dvh">
+      {sidebarOpen && (
+        <DocSidebar
+          docs={docs}
+          currentId={doc.id}
+          onSwitch={(d) => {
+            closeOnMobile();
+            onSwitch(d);
+          }}
+          onNew={() => {
+            closeOnMobile();
+            onNew();
+          }}
+          onClose={() => setSidebarOpen(false)}
+        />
+      )}
 
-      <div className="grid min-h-0 flex-1 lg:grid-cols-2">
-        <div
-          className={`${showPdf ? "block" : "hidden"} min-h-0 border-r border-line bg-soft lg:block`}
-        >
-          <iframe
-            key={page?.jump ?? 0}
-            src={page ? `${pdfUrl}#page=${page.n}` : pdfUrl}
-            title={doc.name}
-            className="h-full w-full"
-          />
-        </div>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="flex items-center gap-3 border-b border-line px-4 py-3 text-sm">
+          <button
+            onClick={() => setSidebarOpen((v) => !v)}
+            aria-label="문서 목록 열기·닫기"
+            aria-expanded={sidebarOpen}
+            className="shrink-0 rounded-md px-1.5 py-1 text-base leading-none text-muted hover:bg-soft hover:text-foreground"
+          >
+            ☰
+          </button>
+          <button onClick={onBack} className="shrink-0 text-muted hover:text-foreground">
+            ← 내 문서
+          </button>
+          <span className="min-w-0 flex-1 truncate font-medium">{title}</span>
+          <button
+            onClick={() => setShowPdf((v) => !v)}
+            className="shrink-0 rounded-full bg-soft px-3 py-1.5 text-xs font-medium lg:hidden"
+          >
+            {showPdf ? "학습 화면" : "원본 보기"}
+          </button>
+        </header>
 
-        <div className={`${showPdf ? "hidden" : "flex"} min-h-0 min-w-0 flex-col lg:flex`}>
-          <nav className="flex gap-2 overflow-x-auto border-b border-line px-4 py-3">
-            {TABS.map((t) => (
-              <button
-                key={t}
-                onClick={() => selectTab(t)}
-                className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm ${
-                  tab === t
-                    ? "bg-foreground font-medium text-background"
-                    : "bg-soft text-muted hover:text-foreground"
-                }`}
-              >
-                {t}
-              </button>
-            ))}
-          </nav>
-
-          <div className="min-h-0 flex-1 overflow-y-auto">
-            {/* 탭을 옮겨도 퀴즈 진행·튜터 대화가 유지되도록 모두 마운트해 두고 숨긴다 */}
-            <div hidden={tab !== "요약"}>
-              <Summary analysis={doc.analysis} onJump={jumpTo} />
-            </div>
-            <div hidden={tab !== "퀴즈"}>
-              <Quiz
-                items={doc.quiz}
-                runId={quizRun}
-                status={quizStatus}
-                error={quizError}
-                onGenerate={generateQuiz}
-                onReset={() => onUpdate({ quiz: null })}
-              />
-            </div>
-            <div hidden={tab !== "플래시카드"}>
-              <LazyPanel
-                state={doc.flashcards === null ? aids.flashcards : { status: "idle" }}
-                label="플래시카드를"
-                onRetry={() => generateAid("flashcards")}
-              >
-                <Flashcards cards={doc.flashcards ?? []} />
-              </LazyPanel>
-            </div>
-            <div hidden={tab !== "핵심 개념"}>
-              <LazyPanel
-                state={doc.concepts === null ? aids.concepts : { status: "idle" }}
-                label="핵심 개념을"
-                onRetry={() => generateAid("concepts")}
-              >
-                <Concepts concepts={doc.concepts ?? []} />
-              </LazyPanel>
-            </div>
-            <div hidden={tab !== "AI 튜터"} className="h-full">
-              <Tutor pdfBase64={pdfBase64} />
-            </div>
+        <div className="grid min-h-0 flex-1 lg:grid-cols-2">
+          <div
+            className={`${showPdf ? "block" : "hidden"} min-h-0 border-r border-line bg-soft lg:block`}
+          >
+            <iframe
+              key={page?.jump ?? 0}
+              src={page ? `${pdfUrl}#page=${page.n}` : pdfUrl}
+              title={doc.name}
+              className="h-full w-full"
+            />
           </div>
 
-          <p className="border-t border-line px-4 py-2 text-center text-xs text-muted">{NOTICE}</p>
+          <div className={`${showPdf ? "hidden" : "flex"} min-h-0 min-w-0 flex-col lg:flex`}>
+            <nav className="flex gap-2 overflow-x-auto border-b border-line px-4 py-3">
+              {TABS.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => selectTab(t)}
+                  className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm ${
+                    tab === t
+                      ? "bg-foreground font-medium text-background"
+                      : "bg-soft text-muted hover:text-foreground"
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </nav>
+
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              {/* 탭을 옮겨도 퀴즈 진행·튜터 대화가 유지되도록 모두 마운트해 두고 숨긴다 */}
+              <div hidden={tab !== "요약"}>
+                <Summary analysis={doc.analysis} onJump={jumpTo} />
+              </div>
+              <div hidden={tab !== "퀴즈"}>
+                <Quiz
+                  items={doc.quiz}
+                  runId={quizRun}
+                  status={quizStatus}
+                  error={quizError}
+                  onGenerate={generateQuiz}
+                  onReset={() => onUpdate({ quiz: null })}
+                />
+              </div>
+              <div hidden={tab !== "플래시카드"}>
+                <LazyPanel
+                  state={doc.flashcards === null ? aids.flashcards : { status: "idle" }}
+                  label="플래시카드를"
+                  onRetry={() => generateAid("flashcards")}
+                >
+                  <Flashcards cards={doc.flashcards ?? []} />
+                </LazyPanel>
+              </div>
+              <div hidden={tab !== "핵심 개념"}>
+                <LazyPanel
+                  state={doc.concepts === null ? aids.concepts : { status: "idle" }}
+                  label="핵심 개념을"
+                  onRetry={() => generateAid("concepts")}
+                >
+                  <Concepts concepts={doc.concepts ?? []} />
+                </LazyPanel>
+              </div>
+              <div hidden={tab !== "AI 튜터"} className="h-full">
+                <Tutor pdfBase64={pdfBase64} />
+              </div>
+            </div>
+
+            <p className="border-t border-line px-4 py-2 text-center text-xs text-muted">{NOTICE}</p>
+          </div>
         </div>
       </div>
     </div>
