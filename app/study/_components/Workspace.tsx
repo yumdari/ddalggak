@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import type { Analysis } from "@/lib/types";
+import type { Analysis } from "@/app/study/_lib/types";
 import Concepts from "./Concepts";
 import Flashcards from "./Flashcards";
 import Quiz from "./Quiz";
@@ -60,7 +60,7 @@ export default function Workspace() {
     try {
       const body = new FormData();
       body.append("file", file);
-      const res = await fetch("/api/analyze", { method: "POST", body });
+      const res = await fetch("/study/api/analyze", { method: "POST", body });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "요약에 실패했어요.");
       setState({
@@ -136,8 +136,11 @@ export default function Workspace() {
   return (
     <div className="flex flex-1 flex-col">
       <header className="flex items-center justify-between border-b border-line px-5 py-4 sm:px-8">
-        <Link href="/" className="text-xl font-bold tracking-tight">
-          딸깍 요약
+        <Link href="/study" className="text-xl font-bold tracking-tight">
+          딸각 <span className="font-normal text-muted">· 강의자료 요약</span>
+        </Link>
+        <Link href="/" className="text-sm text-muted hover:text-foreground">
+          딸각 홈
         </Link>
       </header>
 

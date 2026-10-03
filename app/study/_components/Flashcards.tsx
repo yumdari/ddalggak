@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import type { Flashcard } from "@/lib/types";
+import "./flashcard.css";
+import type { Flashcard } from "@/app/study/_lib/types";
 
 export default function Flashcards({ cards }: { cards: Flashcard[] }) {
   const [index, setIndex] = useState(0);

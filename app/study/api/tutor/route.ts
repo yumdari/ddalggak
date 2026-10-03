@@ -1,7 +1,7 @@
-import { askTutor } from "@/lib/ai";
-import { MAX_PDF_BYTES } from "@/lib/config";
-import { errorResponse } from "@/lib/errors";
-import type { ChatMessage } from "@/lib/types";
+import { askTutor } from "@/app/study/_lib/ai";
+import { MAX_PDF_BYTES } from "@/app/study/_lib/config";
+import { errorResponse } from "@/app/study/_lib/errors";
+import type { ChatMessage } from "@/app/study/_lib/types";
 
 export const maxDuration = 60;
 

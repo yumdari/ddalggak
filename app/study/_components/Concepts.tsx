@@ -1,4 +1,4 @@
-import type { Concept } from "@/lib/types";
+import type { Concept } from "@/app/study/_lib/types";
 
 export default function Concepts({ concepts }: { concepts: Concept[] }) {
   return (

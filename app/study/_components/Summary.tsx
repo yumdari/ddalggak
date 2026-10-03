@@ -1,4 +1,4 @@
-import type { Analysis } from "@/lib/types";
+import type { Analysis } from "@/app/study/_lib/types";
 
 export default function Summary({ analysis }: { analysis: Analysis }) {
   return (

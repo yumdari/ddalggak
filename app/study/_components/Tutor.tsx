@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { ChatMessage } from "@/lib/types";
+import type { ChatMessage } from "@/app/study/_lib/types";
 
 export default function Tutor({ pdfBase64 }: { pdfBase64: string }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -25,7 +25,7 @@ export default function Tutor({ pdfBase64 }: { pdfBase64: string }) {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/tutor", {
+      const res = await fetch("/study/api/tutor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pdfBase64, messages: next }),

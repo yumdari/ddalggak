@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { QuizItem } from "@/lib/types";
+import type { QuizItem } from "@/app/study/_lib/types";
 
 export default function Quiz({ items }: { items: QuizItem[] }) {
   const [index, setIndex] = useState(0);

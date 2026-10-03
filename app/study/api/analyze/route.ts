@@ -1,6 +1,6 @@
-import { analyzePdf } from "@/lib/ai";
-import { MAX_PDF_BYTES } from "@/lib/config";
-import { errorResponse } from "@/lib/errors";
+import { analyzePdf } from "@/app/study/_lib/ai";
+import { MAX_PDF_BYTES } from "@/app/study/_lib/config";
+import { errorResponse } from "@/app/study/_lib/errors";
 
 export const maxDuration = 60;
 

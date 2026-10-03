@@ -12,9 +12,9 @@ export default function Home() {
   return (
     <>
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-background/90 px-5 py-4 backdrop-blur sm:px-8">
-        <span className="text-xl font-bold tracking-tight">딸깍 요약</span>
+        <Link href="/" className="text-xl font-bold tracking-tight">딸각 <span className="font-normal text-muted">· 강의자료 요약</span></Link>
         <Link
-          href="/workspace"
+          href="/study/workspace"
           className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background"
         >
           웹에서 이용하기
@@ -32,7 +32,7 @@ export default function Home() {
             수업자료 PDF를 요약·핵심 개념·퀴즈·플래시카드로 바꿔보세요.
           </p>
           <Link
-            href="/workspace"
+            href="/study/workspace"
             className="mt-9 inline-block rounded-full bg-foreground px-8 py-4 text-base font-medium text-background"
           >
             PDF 올리고 시작하기
@@ -106,7 +106,7 @@ export default function Home() {
           <h2 className="text-2xl font-bold sm:text-3xl">지금 바로 시작하세요</h2>
           <p className="mt-3 text-muted">PDF 한 개면 충분해요. 4MB 이하의 강의자료를 올려 보세요.</p>
           <Link
-            href="/workspace"
+            href="/study/workspace"
             className="mt-7 inline-block rounded-full bg-foreground px-8 py-4 text-base font-medium text-background"
           >
             웹에서 이용하기
@@ -115,7 +115,7 @@ export default function Home() {
       </main>
 
       <footer className="border-t border-line px-5 py-8 text-center text-xs text-muted">
-        딸깍 요약 · Kookmin AI Builder Challenge 2026
+        딸각 · 강의자료 요약·퀴즈
       </footer>
     </>
   );
