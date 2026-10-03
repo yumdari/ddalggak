@@ -12,8 +12,8 @@ export type Opportunity = {
 
 export type OpportunityCategory = "contest" | "scholarship";
 export const CATEGORY_LABELS: Record<OpportunityCategory, string> = {
-  contest: "공모전·대외활동",
-  scholarship: "장학정보",
+  contest: "공모전",
+  scholarship: "국민대학교 장학정보",
 };
 
 export type SearchOptions = {
