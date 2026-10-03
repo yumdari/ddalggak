@@ -27,7 +27,7 @@ export default function LazyPanel({
   if (state.status === "loading") {
     return (
       <div className="flex flex-col items-center px-6 py-20 text-center">
-        <div className="h-9 w-9 animate-spin rounded-full border-4 border-line border-t-foreground" />
+        <div className="h-9 w-9 animate-spin rounded-full border-4 border-line border-t-brand-sky" />
         <p className="mt-6 font-medium">{loadingLabel} 만드는 중이에요</p>
         <p className="mt-2 text-xs text-muted">보통 10~30초 정도 걸려요.</p>
       </div>
@@ -40,7 +40,7 @@ export default function LazyPanel({
       <p className="mt-2 text-sm text-muted">{description}</p>
       <button
         onClick={onStart}
-        className="mt-8 rounded-full bg-foreground px-8 py-3 text-sm font-medium text-background"
+        className="mt-8 rounded-full bg-brand-navy px-8 py-3 text-sm font-medium text-background"
       >
         {state.status === "error" ? "다시 시도" : actionLabel}
       </button>

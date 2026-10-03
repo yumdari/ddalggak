@@ -37,7 +37,7 @@ export default function Library({
           <div key={d.id} className="relative flex flex-col">
             <button
               onClick={() => onOpen(d)}
-              className="overflow-hidden rounded-xl border border-line text-left hover:border-foreground"
+              className="overflow-hidden rounded-xl border border-line text-left hover:border-brand-navy"
             >
               <div className="relative aspect-video bg-soft">
                 {d.thumb ? (

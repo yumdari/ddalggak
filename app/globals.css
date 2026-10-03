@@ -10,6 +10,15 @@
   --good-soft: #f0fdf4;
   --bad: #dc2626;
   --bad-soft: #fef2f2;
+
+  /* 브랜드 색 (ddalggak_web_Color.png) */
+  --brand-navy: #003866; /* Pantone 2955c */
+  --brand-sky: #5cb3e6; /* Pantone 2915c */
+  --brand-ink: #00163a;
+  --brand-deep: #061b41;
+  --brand-blue: #0a4788;
+  --brand-bright: #0879c9;
+  --brand-light: #078dda;
 }
 
 @theme inline {
@@ -22,6 +31,13 @@
   --color-good-soft: var(--good-soft);
   --color-bad: var(--bad);
   --color-bad-soft: var(--bad-soft);
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-sky: var(--brand-sky);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-bright: var(--brand-bright);
+  --color-brand-light: var(--brand-light);
   --font-sans: var(--font-noto-sans-kr), system-ui, sans-serif;
 }
 

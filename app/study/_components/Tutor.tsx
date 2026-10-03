@@ -152,7 +152,7 @@ export default function Tutor({ pdfBase64 }: { pdfBase64: string }) {
             e.preventDefault();
             send();
           }}
-          className="rounded-3xl border border-line bg-background px-4 pb-2 pt-3 shadow-sm focus-within:border-foreground"
+          className="rounded-3xl border border-line bg-background px-4 pb-2 pt-3 shadow-sm focus-within:border-brand-navy"
         >
           <textarea
             ref={textareaRef}
@@ -214,7 +214,7 @@ export default function Tutor({ pdfBase64 }: { pdfBase64: string }) {
               disabled={!canSend}
               aria-label="보내기"
               className={`flex h-9 w-9 items-center justify-center rounded-full ${
-                canSend ? "bg-foreground text-background" : "bg-soft text-muted"
+                canSend ? "bg-brand-navy text-background" : "bg-soft text-muted"
               }`}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>

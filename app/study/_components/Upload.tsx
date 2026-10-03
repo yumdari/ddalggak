@@ -25,7 +25,7 @@ export default function Upload({ loadingName, error, onFile, onSample }: Props) 
 
       {loadingName ? (
         <div className="mt-10 flex flex-col items-center rounded-2xl border border-line px-6 py-16">
-          <div className="h-9 w-9 animate-spin rounded-full border-4 border-line border-t-foreground" />
+          <div className="h-9 w-9 animate-spin rounded-full border-4 border-line border-t-brand-sky" />
           <p className="mt-6 font-medium">AI가 자료를 읽고 요약하는 중이에요</p>
           <p className="mt-1 max-w-full truncate text-sm text-muted">{loadingName}</p>
           <p className="mt-4 text-xs text-muted">보통 20~40초 정도 걸려요.</p>
@@ -47,7 +47,7 @@ export default function Upload({ loadingName, error, onFile, onSample }: Props) 
               if (file) onFile(file);
             }}
             className={`mt-10 w-full rounded-2xl border-2 border-dashed px-6 py-16 text-center transition-colors ${
-              dragging ? "border-foreground bg-soft" : "border-line hover:bg-soft"
+              dragging ? "border-brand-navy bg-soft" : "border-line hover:bg-soft"
             }`}
           >
             <p className="text-lg font-medium">PDF를 끌어다 놓거나 눌러서 선택</p>

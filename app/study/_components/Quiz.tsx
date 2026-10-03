@@ -31,7 +31,7 @@ function QuizSetup({
   if (status === "loading") {
     return (
       <div className="flex flex-col items-center px-6 py-20 text-center">
-        <div className="h-9 w-9 animate-spin rounded-full border-4 border-line border-t-foreground" />
+        <div className="h-9 w-9 animate-spin rounded-full border-4 border-line border-t-brand-sky" />
         <p className="mt-6 font-medium">퀴즈 {count}문제를 만드는 중이에요</p>
         <p className="mt-2 text-xs text-muted">보통 10~30초 정도 걸려요.</p>
       </div>
@@ -54,7 +54,7 @@ function QuizSetup({
             aria-pressed={count === n}
             className={`rounded-full px-5 py-2 text-sm ${
               count === n
-                ? "bg-foreground font-medium text-background"
+                ? "bg-brand-navy font-medium text-background"
                 : "bg-soft text-muted hover:text-foreground"
             }`}
           >
@@ -65,7 +65,7 @@ function QuizSetup({
 
       <button
         onClick={() => onGenerate(count)}
-        className="mt-8 rounded-full bg-foreground px-8 py-3 text-sm font-medium text-background"
+        className="mt-8 rounded-full bg-brand-navy px-8 py-3 text-sm font-medium text-background"
       >
         퀴즈 만들기
       </button>
@@ -112,7 +112,7 @@ function QuizRun({ items, onReset }: { items: QuizItem[]; onReset: () => void })
               setIndex(0);
               setFinished(false);
             }}
-            className="rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background"
+            className="rounded-full bg-brand-navy px-6 py-3 text-sm font-medium text-background"
           >
             다시 풀기
           </button>
@@ -137,7 +137,7 @@ function QuizRun({ items, onReset }: { items: QuizItem[]; onReset: () => void })
       <div className="flex items-center gap-3 text-xs text-muted">
         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-soft">
           <div
-            className="h-full bg-foreground transition-all"
+            className="h-full bg-brand-navy transition-all"
             style={{ width: `${((index + 1) / items.length) * 100}%` }}
           />
         </div>

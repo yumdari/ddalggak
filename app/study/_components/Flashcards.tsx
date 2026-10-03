@@ -33,7 +33,7 @@ export default function Flashcards({ cards }: { cards: Flashcard[] }) {
           <div className="flip-face absolute inset-0 flex items-center justify-center rounded-2xl border border-line bg-background p-8 text-center text-lg font-medium leading-relaxed">
             {card.front}
           </div>
-          <div className="flip-face flip-back absolute inset-0 flex items-center justify-center rounded-2xl bg-foreground p-8 text-center leading-relaxed text-background">
+          <div className="flip-face flip-back absolute inset-0 flex items-center justify-center rounded-2xl bg-brand-navy p-8 text-center leading-relaxed text-background">
             {card.back}
           </div>
         </div>

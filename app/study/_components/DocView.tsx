@@ -189,7 +189,7 @@ export default function DocView({
                     aria-current={tab === t ? "page" : undefined}
                     className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm ${
                       tab === t
-                        ? "bg-foreground font-medium text-background"
+                        ? "bg-brand-navy font-medium text-background"
                         : "hover:bg-soft"
                     }`}
                   >

@@ -27,7 +27,7 @@ export default function Summary({
           <ul className="mt-4 space-y-4 text-[15px]">
             {s.points.map((p, j) => (
               <li key={j} className="flex gap-2.5">
-                <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground" />
+                <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-sky" />
                 <div className="min-w-0 flex-1">
                   <Markdown tight>{p.text}</Markdown>
                   {p.pages.length > 0 && (
@@ -37,7 +37,7 @@ export default function Summary({
                           key={n}
                           onClick={() => onJump(n)}
                           title={`원본 ${n}쪽 보기`}
-                          className="rounded-full bg-soft px-2 py-0.5 text-xs text-muted hover:bg-foreground hover:text-background"
+                          className="rounded-full bg-soft px-2 py-0.5 text-xs text-muted hover:bg-brand-navy hover:text-background"
                         >
                           p.{n}
                         </button>
@@ -50,7 +50,7 @@ export default function Summary({
           </ul>
 
           {s.takeaway && (
-            <blockquote className="mt-5 rounded-r-xl border-l-4 border-foreground bg-soft px-4 py-3 text-[15px]">
+            <blockquote className="mt-5 rounded-r-xl border-l-4 border-brand-sky bg-soft px-4 py-3 text-[15px]">
               <Markdown tight>{s.takeaway}</Markdown>
             </blockquote>
           )}

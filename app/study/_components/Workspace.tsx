@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Logo from "@/components/Logo";
 import { useEffect, useState } from "react";
 import { MAX_PDF_BYTES, MAX_PDF_MB } from "@/app/study/_lib/limits";
 import { deleteDoc, listDocs, saveDoc } from "@/app/study/_lib/store";
@@ -170,9 +171,12 @@ export default function Workspace() {
   return (
     <div className="study-root flex flex-1 flex-col">
       <header className="flex items-center justify-between border-b border-line px-5 py-4 sm:px-8">
-        <Link href="/study" className="text-xl font-bold tracking-tight">
-          딸각 <span className="font-normal text-muted">· 강의자료 요약</span>
-        </Link>
+        <div className="flex items-center gap-2">
+            <Logo />
+            <Link href="/study" className="text-sm text-muted hover:text-brand-navy">
+              · 강의자료 요약
+            </Link>
+          </div>
         <div className="flex items-center gap-4 text-sm text-muted">
           {view === "upload" && hasDocs && !loadingName && (
             <button
@@ -186,14 +190,14 @@ export default function Workspace() {
             </button>
           )}
           <Link href="/" className="hover:text-foreground">
-            딸각 홈
+            딸깍 홈
           </Link>
         </div>
       </header>
 
       {docs === null ? (
         <div className="flex flex-1 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-line border-t-foreground" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-line border-t-brand-sky" />
         </div>
       ) : view === "library" && hasDocs ? (
         <Library

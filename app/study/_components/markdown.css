@@ -12,7 +12,7 @@
 .md h1 { font-size: 1.4em; }
 .md h2 { font-size: 1.2em; }
 .md h3 { font-size: 1.1em; }
-.md blockquote { margin: 0.8em 0; padding: 0.5em 1em; border-left: 3px solid var(--foreground); background: var(--soft); border-radius: 0 0.5em 0.5em 0; }
+.md blockquote { margin: 0.8em 0; padding: 0.5em 1em; border-left: 3px solid var(--brand-sky); background: var(--soft); border-radius: 0 0.5em 0.5em 0; }
 .md blockquote p { margin: 0.2em 0; }
 .md code { font-family: var(--font-geist-mono, ui-monospace, monospace); font-size: 0.9em; background: var(--soft); padding: 0.1em 0.35em; border-radius: 0.3em; }
 .md pre { margin: 0.8em 0; padding: 0.9em 1em; background: var(--soft); border-radius: 0.6em; overflow-x: auto; }

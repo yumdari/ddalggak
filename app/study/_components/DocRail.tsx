@@ -51,11 +51,12 @@ export default function DocRail({
     >
       <Link
         href="/"
-        aria-label="딸각 홈"
-        title="딸각 홈"
-        className="mb-3 flex h-9 w-9 items-center justify-center text-xl font-bold"
+        aria-label="딸깍 홈"
+        title="딸깍 홈"
+        className="relative mb-3 flex h-9 w-9 items-center justify-center"
       >
-        딸
+        <span className="absolute left-2 top-1.5 h-6 w-3.5 rounded-r-full bg-brand-navy" />
+        <span className="absolute left-4 top-1.5 h-6 w-3.5 rounded-r-full bg-brand-sky/90" />
       </Link>
       <RailButton label="새로 만들기" onClick={onNew}>
         <Icon>
