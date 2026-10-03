@@ -2,7 +2,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-Day = Literal["월", "화", "수", "목", "금"]
+Day = Literal["월", "화", "수", "목", "금", "토", "일"]
 Style = Literal[
     "memorization", "problem_solving", "essay", "team_project", "presentation", "project", "exam", "practice"
 ]
@@ -45,9 +45,9 @@ class Profile(StrictModel):
     campus: CampusLife = Field(default_factory=CampusLife)
     completed_ids: list[str] | None = Field(default_factory=list, max_length=50)
     required_ids: list[str] = Field(default_factory=list, max_length=25)
-    free_days: list[Day] = Field(default_factory=list, max_length=5)
-    preferred_days: list[Day] = Field(default_factory=list, max_length=5)
-    avoided_days: list[Day] = Field(default_factory=list, max_length=5)
+    free_days: list[Day] = Field(default_factory=list, max_length=7)
+    preferred_days: list[Day] = Field(default_factory=list, max_length=7)
+    avoided_days: list[Day] = Field(default_factory=list, max_length=7)
     time_preference: Literal["any", "morning", "afternoon"] = "any"
     compact_days: bool = False
     max_credits: int = Field(default=18, ge=1, le=24)
