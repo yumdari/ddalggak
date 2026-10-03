@@ -1,4 +1,4 @@
-import type { Analysis } from "./types";
+import type { Analysis, QuizItem } from "./types";
 
 // MOCK_AI=1 일 때만 사용하는 화면 확인용 샘플 (API 키 없이 UI 개발할 때)
 export const MOCK_ANALYSIS: Analysis = {
@@ -22,20 +22,27 @@ export const MOCK_ANALYSIS: Analysis = {
     { term: "글로컬라이제이션", definition: "Globalization과 Localization을 결합한 전략." },
     { term: "브랜드 일관성", definition: "여러 시장에서 같은 브랜드 경험을 제공하는 것." },
   ],
-  quiz: [
-    {
-      question: "글로컬라이제이션 전략의 핵심은 무엇인가?",
-      choices: [
-        "모든 시장에서 완전히 같은 제품 판매",
-        "핵심 정체성 유지와 현지 적응의 균형",
-        "현지 시장 철수",
-        "가격 인하 경쟁",
-      ],
-      answerIndex: 1,
-      explanation: "글로컬라이제이션은 표준화와 현지화를 동시에 추구합니다.",
-    },
-  ],
   flashcards: [
     { front: "글로컬라이제이션이란?", back: "글로벌 통합과 현지 적응을 함께 추구하는 전략" },
   ],
 };
+
+const MOCK_QUIZ_ITEM: QuizItem = {
+  question: "글로컬라이제이션 전략의 핵심은 무엇인가?",
+  choices: [
+    "모든 시장에서 완전히 같은 제품 판매",
+    "핵심 정체성 유지와 현지 적응의 균형",
+    "현지 시장 철수",
+    "가격 인하 경쟁",
+  ],
+  answerIndex: 1,
+  explanation: "글로컬라이제이션은 표준화와 현지화를 동시에 추구합니다.",
+  hint: "'글로벌'과 '로컬'을 합친 말이에요.",
+};
+
+export function mockQuiz(count: number): QuizItem[] {
+  return Array.from({ length: count }, (_, i) => ({
+    ...MOCK_QUIZ_ITEM,
+    question: `(${i + 1}) ${MOCK_QUIZ_ITEM.question}`,
+  }));
+}

@@ -1,7 +1,7 @@
 import { ApiError, GoogleGenAI } from "@google/genai";
 import { MissingKeyError, UnusableOutputError } from "../errors";
-import { ANALYSIS_SCHEMA, ANALYZE_PROMPT, TUTOR_SYSTEM } from "../prompts";
-import type { Analysis, ChatMessage } from "../types";
+import { ANALYSIS_SCHEMA, ANALYZE_PROMPT, QUIZ_SCHEMA, TUTOR_SYSTEM, quizPrompt } from "../prompts";
+import type { Analysis, ChatMessage, QuizItem } from "../types";
 
 // 사용 가능한 모델명과 무료 한도는 AI Studio에서 확인하고 GEMINI_MODEL로 바꾼다
 const MODEL = process.env.GEMINI_MODEL ?? "gemini-3.8-flash";
@@ -20,18 +20,31 @@ function pdfPart(base64: string) {
   return { inlineData: { mimeType: "application/pdf", data: base64 } };
 }
 
-// 503(과부하)·429(한도)는 잠깐 뒤 다시 시도하면 풀리는 경우가 많다
+// 기본 모델이 붐비면(503)·한도에 걸리면(429) 대체 모델로 넘어간다. 쉼표로 여러 개 지정 가능
+const FALLBACK_MODELS = (process.env.GEMINI_FALLBACK_MODELS ?? "gemini-3.6-flash,gemini-3.1-flash-lite")
+  .split(",")
+  .map((m) => m.trim())
+  .filter(Boolean);
+
+// 모델마다 한 번씩 재시도하고, 그래도 안 되면 다음 모델로 간다 (404는 바로 다음 모델)
 async function generate(params: Parameters<GoogleGenAI["models"]["generateContent"]>[0]) {
-  const delays = [2000, 5000, 10000];
-  for (let attempt = 0; ; attempt++) {
-    try {
-      return await getClient().models.generateContent(params);
-    } catch (e) {
-      const retryable = e instanceof ApiError && (e.status === 503 || e.status === 429);
-      if (!retryable || attempt >= delays.length) throw e;
-      await new Promise((r) => setTimeout(r, delays[attempt]));
+  let lastError: unknown;
+  for (const model of [MODEL, ...FALLBACK_MODELS]) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const response = await getClient().models.generateContent({ ...params, model });
+        if (model !== MODEL) console.warn("[ai] fallback model used:", model);
+        return response;
+      } catch (e) {
+        lastError = e;
+        if (!(e instanceof ApiError)) throw e;
+        if (e.status === 404) break;
+        if (e.status !== 503 && e.status !== 429) throw e;
+        if (attempt === 0) await new Promise((r) => setTimeout(r, 1500));
+      }
     }
   }
+  throw lastError;
 }
 
 export async function analyze(pdfBase64: string): Promise<Analysis> {
@@ -50,6 +63,24 @@ export async function analyze(pdfBase64: string): Promise<Analysis> {
     throw new UnusableOutputError(String(response.candidates?.[0]?.finishReason));
   }
   return JSON.parse(text) as Analysis;
+}
+
+export async function quiz(pdfBase64: string, count: number): Promise<QuizItem[]> {
+  const response = await generate({
+    model: MODEL,
+    contents: [{ role: "user", parts: [pdfPart(pdfBase64), { text: quizPrompt(count) }] }],
+    config: {
+      responseMimeType: "application/json",
+      responseJsonSchema: QUIZ_SCHEMA,
+      maxOutputTokens: 8000,
+    },
+  });
+
+  const text = response.text;
+  if (!text || response.candidates?.[0]?.finishReason === "MAX_TOKENS") {
+    throw new UnusableOutputError(String(response.candidates?.[0]?.finishReason));
+  }
+  return (JSON.parse(text) as { quiz: QuizItem[] }).quiz;
 }
 
 export async function tutor(pdfBase64: string, messages: ChatMessage[]): Promise<string> {

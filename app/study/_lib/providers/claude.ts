@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { MissingKeyError, UnusableOutputError } from "../errors";
-import { ANALYSIS_SCHEMA, ANALYZE_PROMPT, TUTOR_SYSTEM } from "../prompts";
-import type { Analysis, ChatMessage } from "../types";
+import { ANALYSIS_SCHEMA, ANALYZE_PROMPT, QUIZ_SCHEMA, TUTOR_SYSTEM, quizPrompt } from "../prompts";
+import type { Analysis, ChatMessage, QuizItem } from "../types";
 
 const MODEL = process.env.ANTHROPIC_MODEL ?? "claude-opus-5-5";
 
@@ -45,6 +45,28 @@ export async function analyze(pdfBase64: string): Promise<Analysis> {
     throw new UnusableOutputError(response.stop_reason);
   }
   return JSON.parse(textOf(response.content)) as Analysis;
+}
+
+export async function quiz(pdfBase64: string, count: number): Promise<QuizItem[]> {
+  const response = await getClient().messages.create({
+    model: MODEL,
+    max_tokens: 8000,
+    output_config: {
+      effort: "low",
+      format: { type: "json_schema", schema: QUIZ_SCHEMA },
+    },
+    messages: [
+      {
+        role: "user",
+        content: [pdfBlock(pdfBase64), { type: "text", text: quizPrompt(count) }],
+      },
+    ],
+  });
+
+  if (response.stop_reason === "refusal" || response.stop_reason === "max_tokens") {
+    throw new UnusableOutputError(response.stop_reason);
+  }
+  return (JSON.parse(textOf(response.content)) as { quiz: QuizItem[] }).quiz;
 }
 
 export async function tutor(pdfBase64: string, messages: ChatMessage[]): Promise<string> {
