@@ -164,7 +164,7 @@ test("PDF progress, retry and optional skip preserve the intended selection", as
   await page.getByRole("button",{name:"실패한 파일 1개 다시 분석"}).click();
   await expect(page.getByLabel("과목명",{exact:true})).toHaveCount(3);
   await expect(page.getByText("숨겨진 요약",{exact:true})).toHaveCount(0);
-  await expect(page.getByLabel("요일",{exact:true}).first()).toHaveValue("토");
+  await expect(page.getByRole("combobox",{name:"요일",exact:true}).first()).toHaveValue("토");
   await expect(page.getByLabel("시작",{exact:true}).first()).toHaveValue("11:00");
   await page.getByRole("button",{name:"꼭 듣고 싶은 과목",exact:true}).first().click();
   await page.getByRole("button",{name:"선택 없이 다음으로"}).click();
