@@ -3,7 +3,7 @@ import "server-only";
 // Single server entry point for this service: collection -> filtering -> AI output.
 import { analyzeOpportunity, recommendOpportunities } from "./_lib/ai";
 import { searchOpportunities, type OpportunityCategory, type Profile, type SearchOptions } from "./_lib/catalog";
-import { getOpportunities } from "./_lib/feeds";
+import { enrichOpportunityForAnalysis, getOpportunities } from "./_lib/feeds";
 
 export async function listOpportunities(options: SearchOptions) {
   return searchOpportunities(await getOpportunities(), options);
@@ -11,7 +11,7 @@ export async function listOpportunities(options: SearchOptions) {
 
 export async function getOpportunityAnalysis(id: string) {
   const opportunity = (await getOpportunities()).find((item) => item.id === id);
-  return opportunity ? analyzeOpportunity(opportunity) : null;
+  return opportunity ? analyzeOpportunity(await enrichOpportunityForAnalysis(opportunity)) : null;
 }
 
 export async function getRecommendations(profile: Profile, category: OpportunityCategory) {

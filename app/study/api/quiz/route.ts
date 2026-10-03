@@ -1,5 +1,5 @@
 import { makeQuiz } from "@/app/study/_lib/ai";
-import { MAX_PDF_BYTES } from "@/app/study/_lib/config";
+import { MAX_PDF_BYTES, MAX_PDF_MB } from "@/app/study/_lib/limits";
 import { errorResponse } from "@/app/study/_lib/errors";
 import { MAX_QUIZ, MIN_QUIZ } from "@/app/study/_lib/prompts";
 
@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     );
   }
   if (pdfBase64.length > MAX_PDF_BYTES * 1.4) {
-    return Response.json({ error: "4MB 이하의 PDF만 사용할 수 있어요." }, { status: 413 });
+    return Response.json({ error: `${MAX_PDF_MB}MB 이하의 PDF만 사용할 수 있어요.` }, { status: 413 });
   }
 
   try {

@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { ApiError } from "@google/genai";
+import { isDailyQuota } from "./providers/gemini";
 
 // 모델이 답을 거부했거나 중간에 잘려서 쓸 수 없는 경우
 export class UnusableOutputError extends Error {}
@@ -20,6 +21,13 @@ export function errorResponse(e: unknown) {
   const status =
     e instanceof Anthropic.APIError ? e.status : e instanceof ApiError ? e.status : undefined;
 
+  if (isDailyQuota(e)) {
+    console.error("[ai] daily quota exhausted");
+    return Response.json(
+      { error: "오늘 사용할 수 있는 AI 사용량을 모두 썼어요. 내일 다시 시도해 주세요." },
+      { status: 429 },
+    );
+  }
   if (status === 429 || status === 503) {
     console.error("[ai]", status, e instanceof Error ? e.message.slice(0, 300) : e);
     return Response.json(

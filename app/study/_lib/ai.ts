@@ -6,6 +6,7 @@ import {
   flashcardsTask,
   quizTask,
   type JsonTask,
+  type TutorMode,
 } from "./prompts";
 import * as claude from "./providers/claude";
 import * as gemini from "./providers/gemini";
@@ -50,12 +51,16 @@ export async function makeQuiz(pdfBase64: string, count: number): Promise<QuizIt
   return ((await run(pdfBase64, quizTask(count))) as { quiz: QuizItem[] }).quiz;
 }
 
-export async function askTutor(pdfBase64: string, messages: ChatMessage[]): Promise<string> {
+export async function askTutor(
+  pdfBase64: string,
+  messages: ChatMessage[],
+  mode: TutorMode,
+): Promise<string> {
   if (mock) {
     await sleep(800);
     return "(샘플 답변) MOCK_AI 모드에서는 실제 AI가 호출되지 않아요.";
   }
   return provider() === "claude"
-    ? claude.tutor(pdfBase64, messages)
-    : gemini.tutor(pdfBase64, messages);
+    ? claude.tutor(pdfBase64, messages, mode)
+    : gemini.tutor(pdfBase64, messages, mode);
 }
