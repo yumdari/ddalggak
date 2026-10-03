@@ -7,7 +7,7 @@
     "build": "npm --prefix ../../.. run build",
     "start": "npm --prefix ../../.. run start",
     "lint": "npm --prefix ../../.. run lint",
-    "typecheck": "cd ../../.. && npx tsc --noEmit",
+    "typecheck": "cd ../../.. && npx next typegen && npx tsc --noEmit",
     "test:e2e": "playwright test",
     "test:syllabi": "node --test checks/syllabi-route.test.cjs"
   },

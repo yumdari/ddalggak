@@ -8,12 +8,17 @@ const root = path.resolve(__dirname, '../../../..');
 const source = fs.readFileSync(path.join(root, 'app/course-plan/api/syllabi/route.ts'), 'utf8');
 const output = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
 const course = {name:'Robotics', credits:3, professor:'Kim', category:'전공선택', syllabus:'Practice', schedule:[{day:'월', start:600, end:660}]};
-function route(keys, respond) {
+function route(keys, respond, env = {}) {
   class ApiError extends Error { constructor(status) { super('test'); this.status=status; } }
   const exports = {};
   const calls = [];
-  class GoogleGenAI { constructor({apiKey}) { this.models={generateContent:async args=>{calls.push(apiKey);assert.equal(args.config.responseMimeType,'application/json');return respond(apiKey,ApiError);}}; } }
-  vm.runInNewContext(output, {exports, require:()=>({GoogleGenAI,ApiError}), process:{env:{GEMINI_API_KEYS:keys}}, Response, File, FormData, Buffer, AbortSignal, console});
+  class GoogleGenAI { constructor({apiKey}) { this.models={generateContent:async args=>{calls.push(apiKey);assert.equal(args.config.responseMimeType,'application/json');return respond(apiKey,ApiError,args.model);}}; } }
+  const environment = {env:{GEMINI_API_KEYS:keys,...env}};
+  const sdk = {GoogleGenAI,ApiError};
+  const helperExports = {};
+  const helperSource = ts.transpileModule(fs.readFileSync(path.join(root,'lib/gemini.ts'),'utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
+  vm.runInNewContext(helperSource, {exports:helperExports, require:()=>sdk, process:environment, console, Math:Object.assign(Object.create(Math),{random:()=>0})});
+  vm.runInNewContext(output, {exports, require:name=>name==='@/lib/gemini'?helperExports:sdk, process:environment, Response, File, FormData, Buffer, AbortSignal, DOMException, Error, console});
   return {post:exports.POST,calls};
 }
 function request(name='test.pdf', content='%PDF-1.4 fixture') {
@@ -43,4 +48,16 @@ test('invalid AI output and invalid meeting times are rejected',async()=>{
 });
 test('nonretryable errors do not consume every key',async()=>{
   const r=route('first,second',(_,ErrorType)=>{throw new ErrorType(400);});assert.equal((await r.post(request())).status,502);assert.deepEqual(r.calls,['first']);
+});
+
+test('unavailable configured model falls back to a supported model',async()=>{
+  const models=[];
+  const r=route('key',(_,ErrorType,model)=>{models.push(model);if(model==='old-model')throw new ErrorType(404);return {text:JSON.stringify({courses:[course]})};},{COURSE_PLAN_GEMINI_MODEL:'old-model'});
+  assert.equal((await r.post(request())).status,200);assert.deepEqual(models,['old-model','gemini-3.5-flash-lite']);
+});
+test('quota, authentication, unavailable model and timeout have actionable errors',async()=>{
+  for(const [upstream,status,code] of [[429,429,'GEMINI_QUOTA'],[401,503,'GEMINI_AUTH'],[404,503,'GEMINI_MODEL'],[503,503,'GEMINI_UNAVAILABLE']]) {
+    const r=route('key',(_,ErrorType)=>{throw new ErrorType(upstream);});const response=await r.post(request());assert.equal(response.status,status);assert.equal((await response.json()).code,code);
+  }
+  const r=route('key',()=>{throw new DOMException('timeout','TimeoutError');});const response=await r.post(request());assert.equal(response.status,504);assert.equal((await response.json()).code,'GEMINI_TIMEOUT');
 });
