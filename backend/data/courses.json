@@ -1,0 +1,1107 @@
+[
+  {
+    "course_id": "CS101",
+    "name": "C Programming",
+    "credits": 3,
+    "category": "전공기초",
+    "professor": "데모 교수 01",
+    "schedule": [
+      {
+        "day": "월",
+        "start": 540,
+        "end": 660
+      }
+    ],
+    "assessment": {
+      "exam": 65,
+      "assignment": 15,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 15,
+      "problem_solving": 85,
+      "essay": 10,
+      "team_project": 10,
+      "presentation": 10,
+      "project": 65,
+      "exam": 65,
+      "practice": 85
+    },
+    "career_tags": [
+      "Embedded Software",
+      "System Software",
+      "Backend"
+    ],
+    "prerequisites": [],
+    "campus_life": {
+      "social": 25,
+      "discussion": 10,
+      "exploration": 35,
+      "quiet": 75
+    },
+    "recommended_year": 1,
+    "syllabus": "C Programming의 기본 개념과 사례를 학습합니다. 개인 실습과 문제 해결을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "CS102",
+    "name": "컴퓨팅 사고",
+    "credits": 3,
+    "category": "전공기초",
+    "professor": "데모 교수 02",
+    "schedule": [
+      {
+        "day": "화",
+        "start": 540,
+        "end": 660
+      }
+    ],
+    "assessment": {
+      "exam": 60,
+      "assignment": 20,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 20,
+      "problem_solving": 90,
+      "essay": 20,
+      "team_project": 15,
+      "presentation": 10,
+      "project": 70,
+      "exam": 60,
+      "practice": 70
+    },
+    "career_tags": [
+      "Backend",
+      "AI/ML",
+      "Data"
+    ],
+    "prerequisites": [],
+    "campus_life": {
+      "social": 25,
+      "discussion": 10,
+      "exploration": 35,
+      "quiet": 75
+    },
+    "recommended_year": 1,
+    "syllabus": "컴퓨팅 사고의 기본 개념과 사례를 학습합니다. 개인 실습과 문제 해결을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "CS103",
+    "name": "이산수학",
+    "credits": 3,
+    "category": "전공기초",
+    "professor": "데모 교수 03",
+    "schedule": [
+      {
+        "day": "수",
+        "start": 540,
+        "end": 660
+      }
+    ],
+    "assessment": {
+      "exam": 90,
+      "assignment": 0,
+      "project": 10,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 40,
+      "problem_solving": 95,
+      "essay": 20,
+      "team_project": 5,
+      "presentation": 5,
+      "project": 20,
+      "exam": 90,
+      "practice": 20
+    },
+    "career_tags": [
+      "System Software",
+      "AI/ML"
+    ],
+    "prerequisites": [],
+    "campus_life": {
+      "social": 25,
+      "discussion": 5,
+      "exploration": 35,
+      "quiet": 75
+    },
+    "recommended_year": 1,
+    "syllabus": "이산수학의 기본 개념과 사례를 학습합니다. 개념 이해와 사례 토론을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "CS104",
+    "name": "컴퓨터공학 탐색",
+    "credits": 3,
+    "category": "전공기초",
+    "professor": "데모 교수 04",
+    "schedule": [
+      {
+        "day": "목",
+        "start": 540,
+        "end": 660
+      }
+    ],
+    "assessment": {
+      "exam": 40,
+      "assignment": 40,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 25,
+      "problem_solving": 60,
+      "essay": 30,
+      "team_project": 45,
+      "presentation": 40,
+      "project": 50,
+      "exam": 40,
+      "practice": 60
+    },
+    "career_tags": [
+      "아직 모름"
+    ],
+    "prerequisites": [],
+    "campus_life": {
+      "social": 80,
+      "discussion": 40,
+      "exploration": 85,
+      "quiet": 20
+    },
+    "recommended_year": 1,
+    "syllabus": "컴퓨터공학 탐색의 기본 개념과 사례를 학습합니다. 개념 이해와 사례 토론을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "CS201",
+    "name": "C++ Programming",
+    "credits": 3,
+    "category": "전공선택",
+    "professor": "데모 교수 05",
+    "schedule": [
+      {
+        "day": "월",
+        "start": 660,
+        "end": 780
+      }
+    ],
+    "assessment": {
+      "exam": 65,
+      "assignment": 15,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 20,
+      "problem_solving": 90,
+      "essay": 10,
+      "team_project": 15,
+      "presentation": 10,
+      "project": 75,
+      "exam": 65,
+      "practice": 90
+    },
+    "career_tags": [
+      "Embedded Software",
+      "System Software",
+      "Game"
+    ],
+    "prerequisites": [
+      "CS101"
+    ],
+    "campus_life": {
+      "social": 25,
+      "discussion": 10,
+      "exploration": 35,
+      "quiet": 75
+    },
+    "recommended_year": 2,
+    "syllabus": "C++ Programming의 기본 개념과 사례를 학습합니다. 개인 실습과 문제 해결을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "CS202",
+    "name": "자료구조",
+    "credits": 3,
+    "category": "전공기초",
+    "professor": "데모 교수 06",
+    "schedule": [
+      {
+        "day": "화",
+        "start": 660,
+        "end": 780
+      }
+    ],
+    "assessment": {
+      "exam": 75,
+      "assignment": 5,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 25,
+      "problem_solving": 95,
+      "essay": 15,
+      "team_project": 10,
+      "presentation": 10,
+      "project": 65,
+      "exam": 75,
+      "practice": 75
+    },
+    "career_tags": [
+      "Backend",
+      "Embedded Software",
+      "AI/ML",
+      "System Software"
+    ],
+    "prerequisites": [
+      "CS101"
+    ],
+    "campus_life": {
+      "social": 25,
+      "discussion": 10,
+      "exploration": 35,
+      "quiet": 75
+    },
+    "recommended_year": 2,
+    "syllabus": "자료구조의 기본 개념과 사례를 학습합니다. 개인 실습과 문제 해결을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "CS203",
+    "name": "알고리즘",
+    "credits": 3,
+    "category": "전공선택",
+    "professor": "데모 교수 07",
+    "schedule": [
+      {
+        "day": "수",
+        "start": 660,
+        "end": 780
+      }
+    ],
+    "assessment": {
+      "exam": 80,
+      "assignment": 0,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 20,
+      "problem_solving": 95,
+      "essay": 15,
+      "team_project": 10,
+      "presentation": 10,
+      "project": 60,
+      "exam": 80,
+      "practice": 65
+    },
+    "career_tags": [
+      "Backend",
+      "AI/ML",
+      "Game",
+      "System Software"
+    ],
+    "prerequisites": [
+      "CS202"
+    ],
+    "campus_life": {
+      "social": 25,
+      "discussion": 10,
+      "exploration": 35,
+      "quiet": 75
+    },
+    "recommended_year": 2,
+    "syllabus": "알고리즘의 기본 개념과 사례를 학습합니다. 개념 이해와 사례 토론을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "CS204",
+    "name": "컴퓨터구조",
+    "credits": 3,
+    "category": "전공기초",
+    "professor": "데모 교수 08",
+    "schedule": [
+      {
+        "day": "목",
+        "start": 660,
+        "end": 780
+      }
+    ],
+    "assessment": {
+      "exam": 75,
+      "assignment": 5,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 40,
+      "problem_solving": 85,
+      "essay": 20,
+      "team_project": 10,
+      "presentation": 10,
+      "project": 50,
+      "exam": 75,
+      "practice": 60
+    },
+    "career_tags": [
+      "Embedded Software",
+      "System Software"
+    ],
+    "prerequisites": [
+      "CS101"
+    ],
+    "campus_life": {
+      "social": 25,
+      "discussion": 10,
+      "exploration": 35,
+      "quiet": 75
+    },
+    "recommended_year": 2,
+    "syllabus": "컴퓨터구조의 기본 개념과 사례를 학습합니다. 개념 이해와 사례 토론을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "CS205",
+    "name": "운영체제",
+    "credits": 3,
+    "category": "전공선택",
+    "professor": "데모 교수 09",
+    "schedule": [
+      {
+        "day": "화",
+        "start": 810,
+        "end": 930
+      }
+    ],
+    "assessment": {
+      "exam": 75,
+      "assignment": 5,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 25,
+      "problem_solving": 95,
+      "essay": 20,
+      "team_project": 10,
+      "presentation": 10,
+      "project": 70,
+      "exam": 75,
+      "practice": 80
+    },
+    "career_tags": [
+      "Embedded Software",
+      "System Software",
+      "Backend"
+    ],
+    "prerequisites": [
+      "CS202"
+    ],
+    "campus_life": {
+      "social": 25,
+      "discussion": 10,
+      "exploration": 35,
+      "quiet": 75
+    },
+    "recommended_year": 2,
+    "syllabus": "운영체제의 기본 개념과 사례를 학습합니다. 개인 실습과 문제 해결을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "CS206",
+    "name": "시스템프로그래밍",
+    "credits": 3,
+    "category": "전공선택",
+    "professor": "데모 교수 10",
+    "schedule": [
+      {
+        "day": "수",
+        "start": 810,
+        "end": 930
+      }
+    ],
+    "assessment": {
+      "exam": 55,
+      "assignment": 25,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 15,
+      "problem_solving": 95,
+      "essay": 10,
+      "team_project": 10,
+      "presentation": 5,
+      "project": 90,
+      "exam": 55,
+      "practice": 95
+    },
+    "career_tags": [
+      "Embedded Software",
+      "System Software"
+    ],
+    "prerequisites": [
+      "CS101"
+    ],
+    "campus_life": {
+      "social": 25,
+      "discussion": 5,
+      "exploration": 35,
+      "quiet": 75
+    },
+    "recommended_year": 2,
+    "syllabus": "시스템프로그래밍의 기본 개념과 사례를 학습합니다. 개인 실습과 문제 해결을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "CS207",
+    "name": "네트워크",
+    "credits": 3,
+    "category": "전공선택",
+    "professor": "데모 교수 11",
+    "schedule": [
+      {
+        "day": "목",
+        "start": 810,
+        "end": 930
+      }
+    ],
+    "assessment": {
+      "exam": 70,
+      "assignment": 10,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 30,
+      "problem_solving": 90,
+      "essay": 15,
+      "team_project": 15,
+      "presentation": 10,
+      "project": 70,
+      "exam": 70,
+      "practice": 80
+    },
+    "career_tags": [
+      "Embedded Software",
+      "Backend",
+      "System Software"
+    ],
+    "prerequisites": [
+      "CS101"
+    ],
+    "campus_life": {
+      "social": 25,
+      "discussion": 10,
+      "exploration": 35,
+      "quiet": 75
+    },
+    "recommended_year": 2,
+    "syllabus": "네트워크의 기본 개념과 사례를 학습합니다. 개인 실습과 문제 해결을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "CS208",
+    "name": "데이터베이스",
+    "credits": 3,
+    "category": "전공선택",
+    "professor": "데모 교수 12",
+    "schedule": [
+      {
+        "day": "월",
+        "start": 810,
+        "end": 930
+      }
+    ],
+    "assessment": {
+      "exam": 60,
+      "assignment": 20,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 35,
+      "problem_solving": 80,
+      "essay": 20,
+      "team_project": 40,
+      "presentation": 30,
+      "project": 75,
+      "exam": 60,
+      "practice": 80
+    },
+    "career_tags": [
+      "Backend",
+      "Data"
+    ],
+    "prerequisites": [
+      "CS101"
+    ],
+    "campus_life": {
+      "social": 25,
+      "discussion": 30,
+      "exploration": 35,
+      "quiet": 75
+    },
+    "recommended_year": 2,
+    "syllabus": "데이터베이스의 기본 개념과 사례를 학습합니다. 개인 실습과 문제 해결을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "CS301",
+    "name": "임베디드SW",
+    "credits": 3,
+    "category": "전공선택",
+    "professor": "데모 교수 13",
+    "schedule": [
+      {
+        "day": "수",
+        "start": 960,
+        "end": 1080
+      }
+    ],
+    "assessment": {
+      "exam": 40,
+      "assignment": 40,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 15,
+      "problem_solving": 95,
+      "essay": 10,
+      "team_project": 25,
+      "presentation": 20,
+      "project": 95,
+      "exam": 40,
+      "practice": 100
+    },
+    "career_tags": [
+      "Embedded Software"
+    ],
+    "prerequisites": [
+      "CS201",
+      "CS204"
+    ],
+    "campus_life": {
+      "social": 25,
+      "discussion": 20,
+      "exploration": 35,
+      "quiet": 75
+    },
+    "recommended_year": 3,
+    "syllabus": "임베디드SW의 기본 개념과 사례를 학습합니다. 개인 실습과 문제 해결을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "CS302",
+    "name": "인공지능 기초",
+    "credits": 3,
+    "category": "전공선택",
+    "professor": "데모 교수 14",
+    "schedule": [
+      {
+        "day": "금",
+        "start": 660,
+        "end": 780
+      }
+    ],
+    "assessment": {
+      "exam": 65,
+      "assignment": 15,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 40,
+      "problem_solving": 85,
+      "essay": 25,
+      "team_project": 30,
+      "presentation": 20,
+      "project": 75,
+      "exam": 65,
+      "practice": 75
+    },
+    "career_tags": [
+      "AI/ML",
+      "Data"
+    ],
+    "prerequisites": [
+      "CS102"
+    ],
+    "campus_life": {
+      "social": 25,
+      "discussion": 20,
+      "exploration": 35,
+      "quiet": 75
+    },
+    "recommended_year": 2,
+    "syllabus": "인공지능 기초의 기본 개념과 사례를 학습합니다. 개인 실습과 문제 해결을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "CS303",
+    "name": "머신러닝",
+    "credits": 3,
+    "category": "전공선택",
+    "professor": "데모 교수 15",
+    "schedule": [
+      {
+        "day": "화",
+        "start": 960,
+        "end": 1080
+      }
+    ],
+    "assessment": {
+      "exam": 60,
+      "assignment": 20,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 35,
+      "problem_solving": 95,
+      "essay": 30,
+      "team_project": 40,
+      "presentation": 35,
+      "project": 90,
+      "exam": 60,
+      "practice": 80
+    },
+    "career_tags": [
+      "AI/ML",
+      "Data",
+      "Graduate School"
+    ],
+    "prerequisites": [
+      "CS203"
+    ],
+    "campus_life": {
+      "social": 25,
+      "discussion": 35,
+      "exploration": 35,
+      "quiet": 75
+    },
+    "recommended_year": 3,
+    "syllabus": "머신러닝의 기본 개념과 사례를 학습합니다. 개인 실습과 문제 해결을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "CS304",
+    "name": "웹 프론트엔드",
+    "credits": 3,
+    "category": "전공선택",
+    "professor": "데모 교수 16",
+    "schedule": [
+      {
+        "day": "금",
+        "start": 810,
+        "end": 930
+      }
+    ],
+    "assessment": {
+      "exam": 30,
+      "assignment": 50,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 15,
+      "problem_solving": 80,
+      "essay": 10,
+      "team_project": 65,
+      "presentation": 50,
+      "project": 95,
+      "exam": 30,
+      "practice": 100
+    },
+    "career_tags": [
+      "Frontend"
+    ],
+    "prerequisites": [
+      "CS101"
+    ],
+    "campus_life": {
+      "social": 25,
+      "discussion": 50,
+      "exploration": 35,
+      "quiet": 75
+    },
+    "recommended_year": 2,
+    "syllabus": "웹 프론트엔드의 기본 개념과 사례를 학습합니다. 개인 실습과 문제 해결을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "CS305",
+    "name": "백엔드 서비스",
+    "credits": 3,
+    "category": "전공선택",
+    "professor": "데모 교수 17",
+    "schedule": [
+      {
+        "day": "목",
+        "start": 960,
+        "end": 1080
+      }
+    ],
+    "assessment": {
+      "exam": 35,
+      "assignment": 45,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 20,
+      "problem_solving": 85,
+      "essay": 15,
+      "team_project": 60,
+      "presentation": 35,
+      "project": 95,
+      "exam": 35,
+      "practice": 95
+    },
+    "career_tags": [
+      "Backend"
+    ],
+    "prerequisites": [
+      "CS208"
+    ],
+    "campus_life": {
+      "social": 25,
+      "discussion": 35,
+      "exploration": 35,
+      "quiet": 75
+    },
+    "recommended_year": 3,
+    "syllabus": "백엔드 서비스의 기본 개념과 사례를 학습합니다. 개인 실습과 문제 해결을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "GE101",
+    "name": "심리학의 이해",
+    "credits": 3,
+    "category": "교양",
+    "professor": "데모 교수 18",
+    "schedule": [
+      {
+        "day": "월",
+        "start": 960,
+        "end": 1080
+      }
+    ],
+    "assessment": {
+      "exam": 80,
+      "assignment": 0,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 75,
+      "problem_solving": 50,
+      "essay": 50,
+      "team_project": 20,
+      "presentation": 20,
+      "project": 20,
+      "exam": 80,
+      "practice": 25
+    },
+    "career_tags": [
+      "아직 모름"
+    ],
+    "prerequisites": [],
+    "campus_life": {
+      "social": 80,
+      "discussion": 20,
+      "exploration": 85,
+      "quiet": 20
+    },
+    "recommended_year": 1,
+    "syllabus": "심리학의 이해의 기본 개념과 사례를 학습합니다. 개념 이해와 사례 토론을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "GE102",
+    "name": "인간관계와 소통",
+    "credits": 3,
+    "category": "교양",
+    "professor": "데모 교수 19",
+    "schedule": [
+      {
+        "day": "화",
+        "start": 810,
+        "end": 930
+      }
+    ],
+    "assessment": {
+      "exam": 30,
+      "assignment": 50,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 30,
+      "problem_solving": 45,
+      "essay": 55,
+      "team_project": 75,
+      "presentation": 65,
+      "project": 60,
+      "exam": 30,
+      "practice": 60
+    },
+    "career_tags": [
+      "아직 모름"
+    ],
+    "prerequisites": [],
+    "campus_life": {
+      "social": 80,
+      "discussion": 65,
+      "exploration": 85,
+      "quiet": 20
+    },
+    "recommended_year": 1,
+    "syllabus": "인간관계와 소통의 기본 개념과 사례를 학습합니다. 개념 이해와 사례 토론을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "GE103",
+    "name": "경제와 일상",
+    "credits": 3,
+    "category": "교양",
+    "professor": "데모 교수 20",
+    "schedule": [
+      {
+        "day": "수",
+        "start": 960,
+        "end": 1080
+      }
+    ],
+    "assessment": {
+      "exam": 75,
+      "assignment": 5,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 55,
+      "problem_solving": 70,
+      "essay": 40,
+      "team_project": 20,
+      "presentation": 20,
+      "project": 30,
+      "exam": 75,
+      "practice": 35
+    },
+    "career_tags": [
+      "Data",
+      "아직 모름"
+    ],
+    "prerequisites": [],
+    "campus_life": {
+      "social": 80,
+      "discussion": 20,
+      "exploration": 85,
+      "quiet": 20
+    },
+    "recommended_year": 1,
+    "syllabus": "경제와 일상의 기본 개념과 사례를 학습합니다. 개념 이해와 사례 토론을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "GE104",
+    "name": "창업과 아이디어",
+    "credits": 3,
+    "category": "교양",
+    "professor": "데모 교수 21",
+    "schedule": [
+      {
+        "day": "목",
+        "start": 810,
+        "end": 930
+      }
+    ],
+    "assessment": {
+      "exam": 20,
+      "assignment": 60,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 20,
+      "problem_solving": 75,
+      "essay": 40,
+      "team_project": 85,
+      "presentation": 80,
+      "project": 95,
+      "exam": 20,
+      "practice": 85
+    },
+    "career_tags": [
+      "Backend",
+      "Frontend",
+      "아직 모름"
+    ],
+    "prerequisites": [],
+    "campus_life": {
+      "social": 80,
+      "discussion": 80,
+      "exploration": 85,
+      "quiet": 20
+    },
+    "recommended_year": 1,
+    "syllabus": "창업과 아이디어의 기본 개념과 사례를 학습합니다. 개인 실습과 문제 해결을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "GE105",
+    "name": "대학 글쓰기",
+    "credits": 3,
+    "category": "교양",
+    "professor": "데모 교수 22",
+    "schedule": [
+      {
+        "day": "금",
+        "start": 540,
+        "end": 660
+      }
+    ],
+    "assessment": {
+      "exam": 30,
+      "assignment": 50,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 35,
+      "problem_solving": 65,
+      "essay": 95,
+      "team_project": 15,
+      "presentation": 20,
+      "project": 50,
+      "exam": 30,
+      "practice": 60
+    },
+    "career_tags": [
+      "Graduate School",
+      "아직 모름"
+    ],
+    "prerequisites": [],
+    "campus_life": {
+      "social": 80,
+      "discussion": 20,
+      "exploration": 85,
+      "quiet": 20
+    },
+    "recommended_year": 1,
+    "syllabus": "대학 글쓰기의 기본 개념과 사례를 학습합니다. 개념 이해와 사례 토론을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "GE106",
+    "name": "발표와 커뮤니케이션",
+    "credits": 3,
+    "category": "교양",
+    "professor": "데모 교수 23",
+    "schedule": [
+      {
+        "day": "월",
+        "start": 660,
+        "end": 780
+      }
+    ],
+    "assessment": {
+      "exam": 20,
+      "assignment": 60,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 20,
+      "problem_solving": 55,
+      "essay": 55,
+      "team_project": 70,
+      "presentation": 95,
+      "project": 65,
+      "exam": 20,
+      "practice": 80
+    },
+    "career_tags": [
+      "아직 모름"
+    ],
+    "prerequisites": [],
+    "campus_life": {
+      "social": 80,
+      "discussion": 95,
+      "exploration": 85,
+      "quiet": 20
+    },
+    "recommended_year": 1,
+    "syllabus": "발표와 커뮤니케이션의 기본 개념과 사례를 학습합니다. 개인 실습과 문제 해결을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "GE107",
+    "name": "결혼과 가족",
+    "credits": 3,
+    "category": "교양",
+    "professor": "데모 교수 24",
+    "schedule": [
+      {
+        "day": "수",
+        "start": 810,
+        "end": 930
+      }
+    ],
+    "assessment": {
+      "exam": 60,
+      "assignment": 20,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 55,
+      "problem_solving": 45,
+      "essay": 60,
+      "team_project": 45,
+      "presentation": 35,
+      "project": 30,
+      "exam": 60,
+      "practice": 30
+    },
+    "career_tags": [
+      "아직 모름"
+    ],
+    "prerequisites": [],
+    "campus_life": {
+      "social": 80,
+      "discussion": 35,
+      "exploration": 85,
+      "quiet": 20
+    },
+    "recommended_year": 1,
+    "syllabus": "결혼과 가족의 기본 개념과 사례를 학습합니다. 개념 이해와 사례 토론을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  },
+  {
+    "course_id": "GE108",
+    "name": "게임과 문화",
+    "credits": 3,
+    "category": "교양",
+    "professor": "데모 교수 25",
+    "schedule": [
+      {
+        "day": "목",
+        "start": 960,
+        "end": 1080
+      }
+    ],
+    "assessment": {
+      "exam": 40,
+      "assignment": 40,
+      "project": 20,
+      "participation": 0
+    },
+    "learning_style": {
+      "memorization": 25,
+      "problem_solving": 60,
+      "essay": 50,
+      "team_project": 65,
+      "presentation": 55,
+      "project": 70,
+      "exam": 40,
+      "practice": 65
+    },
+    "career_tags": [
+      "Game",
+      "아직 모름"
+    ],
+    "prerequisites": [],
+    "campus_life": {
+      "social": 80,
+      "discussion": 55,
+      "exploration": 85,
+      "quiet": 20
+    },
+    "recommended_year": 1,
+    "syllabus": "게임과 문화의 기본 개념과 사례를 학습합니다. 개념 이해와 사례 토론을 중심으로 진행합니다. 평가 및 수업 방식은 가상의 데모 데이터입니다."
+  }
+]
