@@ -116,12 +116,12 @@ test("simplified profile and syllabus upload feed the recommendation", async ({ 
   await page.getByLabel("수업계획서 PDF 업로드").setInputFiles([{name:"syllabus.pdf",mimeType:"application/pdf",buffer:Buffer.from("%PDF-1.4 test")},{name:"bad.pdf",mimeType:"application/pdf",buffer:Buffer.from("%PDF-1.4 test")}]);
   await expect(page.getByLabel("과목명",{exact:true})).toHaveValue("업로드 테스트 과목");
   await expect(page.getByRole("main").getByRole("alert")).toContainText("bad.pdf");
-  await page.getByRole("button",{name:"확인 후 필수 과목 추가"}).click();
+  await page.getByRole("button",{name:"꼭 듣고 싶은 과목"}).click();
   await expect(page.getByRole("main").getByRole("alert")).toContainText("과목명, 1~6학점");
   await page.getByLabel("학점",{exact:true}).fill("3");
   await page.getByRole("button",{name:"수업 시간 추가"}).click();
   await page.getByLabel("시작",{exact:true}).fill("18:00"); await page.getByLabel("종료",{exact:true}).fill("19:00");
-  await page.getByRole("button",{name:"확인 후 필수 과목 추가"}).click();
+  await page.getByRole("button",{name:"꼭 듣고 싶은 과목"}).click();
   await page.getByRole("button",{name:"다음 질문"}).click();
   await page.getByRole("group",{name:"새로운 사람 만나기",exact:true}).getByRole("radio",{name:"좋아요",exact:true}).check();
   await page.getByRole("button",{name:"내 추천 확인하기"}).click();
