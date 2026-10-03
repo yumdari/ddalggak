@@ -37,6 +37,20 @@ async function post<T>(url: string, body: unknown, fallback: string): Promise<T>
   return json as T;
 }
 
+// 만들어 둔 내용을 지우고 처음 화면으로 돌아간다
+function RemakeButton({ onClick }: { onClick: () => void }) {
+  return (
+    <div className="pb-8 text-center">
+      <button
+        onClick={onClick}
+        className="text-xs text-muted underline underline-offset-4 hover:text-foreground"
+      >
+        다시 만들기
+      </button>
+    </div>
+  );
+}
+
 export default function DocView({
   doc,
   docs,
@@ -97,14 +111,6 @@ export default function DocView({
       setQuizError(e instanceof Error ? e.message : "퀴즈를 만들지 못했어요.");
       setQuizStatus("error");
     }
-  }
-
-  // 개념·카드는 탭을 처음 열 때 만든다
-  function selectTab(t: Tab) {
-    setTab(t);
-    const kind: AidKind | null =
-      t === "핵심 개념" ? "concepts" : t === "플래시카드" ? "flashcards" : null;
-    if (kind && doc[kind] === null && aids[kind].status === "idle") generateAid(kind);
   }
 
   function jumpTo(n: number) {
@@ -171,7 +177,7 @@ export default function DocView({
               {TABS.map((t) => (
                 <button
                   key={t}
-                  onClick={() => selectTab(t)}
+                  onClick={() => setTab(t)}
                   className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm ${
                     tab === t
                       ? "bg-foreground font-medium text-background"
@@ -200,20 +206,30 @@ export default function DocView({
               </div>
               <div hidden={tab !== "플래시카드"}>
                 <LazyPanel
-                  state={doc.flashcards === null ? aids.flashcards : { status: "idle" }}
-                  label="플래시카드를"
-                  onRetry={() => generateAid("flashcards")}
+                  state={aids.flashcards}
+                  ready={doc.flashcards !== null}
+                  title="플래시카드로 외워 볼까요?"
+                  description="강의자료의 핵심 내용을 질문과 답으로 된 카드로 만들어요."
+                  actionLabel="플래시카드 만들기"
+                  loadingLabel="플래시카드를"
+                  onStart={() => generateAid("flashcards")}
                 >
                   <Flashcards cards={doc.flashcards ?? []} />
+                  <RemakeButton onClick={() => onUpdate({ flashcards: null })} />
                 </LazyPanel>
               </div>
               <div hidden={tab !== "핵심 개념"}>
                 <LazyPanel
-                  state={doc.concepts === null ? aids.concepts : { status: "idle" }}
-                  label="핵심 개념을"
-                  onRetry={() => generateAid("concepts")}
+                  state={aids.concepts}
+                  ready={doc.concepts !== null}
+                  title="핵심 개념을 정리해 볼까요?"
+                  description="시험에 나올 만한 용어와 정의를 한눈에 모아 보여줘요."
+                  actionLabel="핵심 개념 만들기"
+                  loadingLabel="핵심 개념을"
+                  onStart={() => generateAid("concepts")}
                 >
                   <Concepts concepts={doc.concepts ?? []} />
+                  <RemakeButton onClick={() => onUpdate({ concepts: null })} />
                 </LazyPanel>
               </div>
               <div hidden={tab !== "AI 튜터"} className="h-full">
