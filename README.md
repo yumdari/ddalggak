@@ -67,3 +67,21 @@ npm run dev                  # http://localhost:3000
 ## 배포
 
 Vercel에 저장소를 그대로 연결한다 (루트가 Next.js 앱). 환경변수는 Vercel 설정에 따로 넣는다. 빌드는 `next build --webpack`으로 고정했다.
+
+## 독립 수강 추천 앱
+
+[수강 추천 서비스](apps/course-recommendation/README.md)는 `apps/course-recommendation/` 아래에 독립 앱으로 보존되어 있습니다.
+
+- `frontend/`: 프로필 입력, 추천 결과, 수강 실패 복구 UI
+- `backend/`: 결정론적 추천 API와 가상 과목 데이터
+- `docs/`, `scripts/`, `render.yaml`: 검증 기록, 실행 스크립트, 배포 설정
+
+메인 앱의 `/course-plan`은 현재 준비 중 화면입니다. 독립 추천 UI를 메인 경로에 실제 연결하는 작업은 후속 범위입니다.
+
+루트의 `npm run dev`는 메인 앱을 실행합니다. 독립 앱은 별도 터미널에서 다음과 같이 실행할 수 있습니다.
+
+```powershell
+./apps/course-recommendation/scripts/dev.ps1 -FrontendPort 3001 -BackendPort 8001
+```
+
+독립 앱의 실행·배포·검증 방법은 앱 README를 참고하세요. 루트 TypeScript/ESLint 검사에서 `apps/`를 제외하고 독립 앱은 `.github/workflows/verify.yml`에서 별도로 검증합니다.
