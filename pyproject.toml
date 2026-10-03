@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ddalggak"
+version = "0.1.0"
+description = "Contest and scholarship discovery for university students"
+requires-python = ">=3.11"
+dependencies = ["Flask>=3.0,<4"]
+
+[project.optional-dependencies]
+dev = ["ruff>=0.8,<1"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+ddalggak = ["schema.sql", "templates/*.html", "static/*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]

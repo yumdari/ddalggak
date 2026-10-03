@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>딸깍 | 나에게 맞는 기회</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a href="/" class="logo">딸깍<span>.</span></a>
+      <nav aria-label="주 메뉴">
+        <button class="nav-button active" data-view="feed">맞춤 공고</button>
+        <button class="nav-button" data-view="bookmarks">관심 공고</button>
+        <button class="nav-button" data-view="profile">내 조건</button>
+        <button class="nav-button" data-view="admin" id="admin-nav" hidden>검수함</button>
+      </nav>
+      <div id="account"></div>
+    </div>
+  </header>
+  <main class="shell">
+    <section class="hero">
+      <p class="eyebrow">CAMPUS OPPORTUNITY FEED</p>
+      <h1>찾지 않아도,<br><em>나에게 맞는 기회가</em> 모이도록.</h1>
+      <p>여러 출처의 공모전과 장학금을 모아 관심 분야·학년·지역에 맞춰 보여드려요.</p>
+    </section>
+    <div id="notice" role="status" aria-live="polite"></div>
+    <section id="feed-view" class="view">
+      <div class="section-heading"><div><p class="eyebrow">FOR YOU</p><h2>오늘의 맞춤 공고</h2></div><span id="feed-count"></span></div>
+      <div id="feed-list" class="card-grid"></div>
+    </section>
+    <section id="bookmarks-view" class="view" hidden>
+      <div class="section-heading"><div><p class="eyebrow">SAVED</p><h2>관심 공고</h2></div></div>
+      <div id="bookmark-list" class="card-grid"></div>
+    </section>
+    <section id="profile-view" class="view" hidden>
+      <div class="section-heading"><div><p class="eyebrow">PREFERENCES</p><h2>내 조건</h2></div></div>
+      <form id="profile-form" class="panel form-stack">
+        <label>관심 분야 <small>쉼표로 구분해 입력하세요</small><input name="interests" placeholder="예: 디자인, AI, 창업"></label>
+        <label>학년 <select name="grade"><option value="">선택 안 함</option><option value="1">1학년</option><option value="2">2학년</option><option value="3">3학년</option><option value="4">4학년</option><option value="5">5학년</option><option value="6">6학년</option></select></label>
+        <label>지역 <input name="region" placeholder="예: 서울"></label>
+        <button class="primary" type="submit">조건 저장하고 추천 보기</button>
+      </form>
+    </section>
+    <section id="admin-view" class="view" hidden>
+      <div class="section-heading"><div><p class="eyebrow">REVIEW</p><h2>수집 공고 검수함</h2></div></div>
+      <p class="hint">출처에서 가져온 정보입니다. 원문을 확인하고 정확한 자격과 마감을 입력한 뒤 게시하세요.</p>
+      <div id="candidate-list"></div>
+    </section>
+  </main>
+  <dialog id="auth-dialog">
+    <form id="auth-form" class="form-stack">
+      <div class="dialog-heading"><h2 id="auth-title">로그인</h2><button type="button" class="text-button" id="close-auth">닫기</button></div>
+      <label>이메일 <input name="email" type="email" required autocomplete="email"></label>
+      <label>비밀번호 <input name="password" type="password" minlength="8" required autocomplete="current-password"></label>
+      <button type="submit" class="primary" id="auth-submit">로그인</button>
+      <button type="button" class="text-button" id="auth-switch">회원가입하기</button>
+    </form>
+  </dialog>
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>
