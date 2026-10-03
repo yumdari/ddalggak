@@ -20,9 +20,9 @@ export function errorResponse(e: unknown) {
   const status =
     e instanceof Anthropic.APIError ? e.status : e instanceof ApiError ? e.status : undefined;
 
-  if (status === 429) {
+  if (status === 429 || status === 503) {
     return Response.json(
-      { error: "요청이 몰리고 있어요. 잠시 후 다시 시도해 주세요." },
+      { error: "AI가 지금 붐비고 있어요. 잠시 후 다시 시도해 주세요." },
       { status: 429 },
     );
   }
