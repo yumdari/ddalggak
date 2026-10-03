@@ -1,10 +1,16 @@
 import { ApiError, GoogleGenAI } from "@google/genai";
 import { MissingKeyError, UnusableOutputError } from "../errors";
-import { ANALYSIS_SCHEMA, ANALYZE_PROMPT, QUIZ_SCHEMA, TUTOR_SYSTEM, quizPrompt } from "../prompts";
-import type { Analysis, ChatMessage, QuizItem } from "../types";
+import { TUTOR_SYSTEM, type JsonTask } from "../prompts";
+import type { ChatMessage } from "../types";
 
 // 사용 가능한 모델명과 무료 한도는 AI Studio에서 확인하고 GEMINI_MODEL로 바꾼다
 const MODEL = process.env.GEMINI_MODEL ?? "gemini-3.8-flash";
+
+// 기본 모델이 붐비면(503)·한도에 걸리면(429) 대체 모델로 넘어간다. 쉼표로 여러 개 지정 가능
+const FALLBACK_MODELS = (process.env.GEMINI_FALLBACK_MODELS ?? "gemini-3.6-flash,gemini-3.1-flash-lite")
+  .split(",")
+  .map((m) => m.trim())
+  .filter(Boolean);
 
 let client: GoogleGenAI | null = null;
 function getClient() {
@@ -19,12 +25,6 @@ function getClient() {
 function pdfPart(base64: string) {
   return { inlineData: { mimeType: "application/pdf", data: base64 } };
 }
-
-// 기본 모델이 붐비면(503)·한도에 걸리면(429) 대체 모델로 넘어간다. 쉼표로 여러 개 지정 가능
-const FALLBACK_MODELS = (process.env.GEMINI_FALLBACK_MODELS ?? "gemini-3.6-flash,gemini-3.1-flash-lite")
-  .split(",")
-  .map((m) => m.trim())
-  .filter(Boolean);
 
 // 모델마다 한 번씩 재시도하고, 그래도 안 되면 다음 모델로 간다 (404는 바로 다음 모델)
 async function generate(params: Parameters<GoogleGenAI["models"]["generateContent"]>[0]) {
@@ -47,14 +47,15 @@ async function generate(params: Parameters<GoogleGenAI["models"]["generateConten
   throw lastError;
 }
 
-export async function analyze(pdfBase64: string): Promise<Analysis> {
+// PDF와 작업 지시를 보내 스키마에 맞는 JSON을 받는다
+export async function json(pdfBase64: string, task: JsonTask): Promise<unknown> {
   const response = await generate({
     model: MODEL,
-    contents: [{ role: "user", parts: [pdfPart(pdfBase64), { text: ANALYZE_PROMPT }] }],
+    contents: [{ role: "user", parts: [pdfPart(pdfBase64), { text: task.prompt }] }],
     config: {
       responseMimeType: "application/json",
-      responseJsonSchema: ANALYSIS_SCHEMA,
-      maxOutputTokens: 16000,
+      responseJsonSchema: task.schema,
+      maxOutputTokens: task.maxTokens,
     },
   });
 
@@ -62,25 +63,7 @@ export async function analyze(pdfBase64: string): Promise<Analysis> {
   if (!text || response.candidates?.[0]?.finishReason === "MAX_TOKENS") {
     throw new UnusableOutputError(String(response.candidates?.[0]?.finishReason));
   }
-  return JSON.parse(text) as Analysis;
-}
-
-export async function quiz(pdfBase64: string, count: number): Promise<QuizItem[]> {
-  const response = await generate({
-    model: MODEL,
-    contents: [{ role: "user", parts: [pdfPart(pdfBase64), { text: quizPrompt(count) }] }],
-    config: {
-      responseMimeType: "application/json",
-      responseJsonSchema: QUIZ_SCHEMA,
-      maxOutputTokens: 8000,
-    },
-  });
-
-  const text = response.text;
-  if (!text || response.candidates?.[0]?.finishReason === "MAX_TOKENS") {
-    throw new UnusableOutputError(String(response.candidates?.[0]?.finishReason));
-  }
-  return (JSON.parse(text) as { quiz: QuizItem[] }).quiz;
+  return JSON.parse(text);
 }
 
 export async function tutor(pdfBase64: string, messages: ChatMessage[]): Promise<string> {

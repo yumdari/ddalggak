@@ -4,9 +4,10 @@
 
 ## 구조
 
-- `page.tsx` 서비스 소개 · `workspace/page.tsx` 작업 화면
-- `api/analyze` PDF → 요약/개념/카드 · `api/quiz` 퀴즈 생성(문항 수·힌트 포함) · `api/tutor` 자료 기반 질의응답 (모두 구조화 JSON 출력)
-- `_components/` 탭별 UI
+- `page.tsx` 서비스 소개 · `workspace/page.tsx` 작업 화면 (내 문서 목록 → 업로드 → 문서 보기)
+- `api/analyze` PDF → 요약(쪽수 근거 포함) · `api/generate` 핵심 개념/플래시카드 · `api/quiz` 퀴즈(문항 수·힌트) · `api/tutor` 자료 기반 질의응답 (모두 구조화 JSON 출력)
+- `_components/` 화면 (`Workspace` 흐름 제어, `Library` 목록, `Upload`, `DocView` 문서 보기와 탭)
+- `_lib/store.ts` 브라우저 저장(IndexedDB)
 - `_lib/ai.ts` 제공자 선택 · `_lib/providers/{gemini,claude}.ts` 호출 구현 · `_lib/prompts.ts` 프롬프트와 스키마
 
 ## 환경변수 (`.env.local`)
@@ -24,5 +25,5 @@
 ## 제한 · 추후 구현
 
 - PDF는 4MB 이하 (Vercel 요청 본문 한도)
-- 로그인·저장 기록 없음 (새로고침하면 결과 사라짐)
+- 문서는 이 브라우저에만 저장된다 (서버 저장·로그인 없음, 브라우저 데이터를 지우면 사라짐)
 - 마인드맵, 강의 녹음, 유튜브·PPT 입력은 미구현
