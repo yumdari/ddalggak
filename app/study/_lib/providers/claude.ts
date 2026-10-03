@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { MissingKeyError, UnusableOutputError } from "../errors";
-import { ANALYSIS_SCHEMA, ANALYZE_PROMPT, QUIZ_SCHEMA, TUTOR_SYSTEM, quizPrompt } from "../prompts";
-import type { Analysis, ChatMessage, QuizItem } from "../types";
+import { TUTOR_SYSTEM, type JsonTask } from "../prompts";
+import type { ChatMessage } from "../types";
 
 const MODEL = process.env.ANTHROPIC_MODEL ?? "claude-opus-5-5";
 
@@ -25,18 +25,19 @@ function textOf(content: Anthropic.ContentBlock[]) {
   return content.flatMap((b) => (b.type === "text" ? [b.text] : [])).join("\n");
 }
 
-export async function analyze(pdfBase64: string): Promise<Analysis> {
+// PDF와 작업 지시를 보내 스키마에 맞는 JSON을 받는다
+export async function json(pdfBase64: string, task: JsonTask): Promise<unknown> {
   const response = await getClient().messages.create({
     model: MODEL,
-    max_tokens: 16000,
+    max_tokens: task.maxTokens,
     output_config: {
       effort: "low",
-      format: { type: "json_schema", schema: ANALYSIS_SCHEMA },
+      format: { type: "json_schema", schema: task.schema as Record<string, unknown> },
     },
     messages: [
       {
         role: "user",
-        content: [pdfBlock(pdfBase64), { type: "text", text: ANALYZE_PROMPT }],
+        content: [pdfBlock(pdfBase64), { type: "text", text: task.prompt }],
       },
     ],
   });
@@ -44,29 +45,7 @@ export async function analyze(pdfBase64: string): Promise<Analysis> {
   if (response.stop_reason === "refusal" || response.stop_reason === "max_tokens") {
     throw new UnusableOutputError(response.stop_reason);
   }
-  return JSON.parse(textOf(response.content)) as Analysis;
-}
-
-export async function quiz(pdfBase64: string, count: number): Promise<QuizItem[]> {
-  const response = await getClient().messages.create({
-    model: MODEL,
-    max_tokens: 8000,
-    output_config: {
-      effort: "low",
-      format: { type: "json_schema", schema: QUIZ_SCHEMA },
-    },
-    messages: [
-      {
-        role: "user",
-        content: [pdfBlock(pdfBase64), { type: "text", text: quizPrompt(count) }],
-      },
-    ],
-  });
-
-  if (response.stop_reason === "refusal" || response.stop_reason === "max_tokens") {
-    throw new UnusableOutputError(response.stop_reason);
-  }
-  return (JSON.parse(textOf(response.content)) as { quiz: QuizItem[] }).quiz;
+  return JSON.parse(textOf(response.content));
 }
 
 export async function tutor(pdfBase64: string, messages: ChatMessage[]): Promise<string> {

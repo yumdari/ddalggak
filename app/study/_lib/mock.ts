@@ -1,4 +1,4 @@
-import type { Analysis, QuizItem } from "./types";
+import type { Analysis, Concept, Flashcard, QuizItem } from "./types";
 
 // MOCK_AI=1 일 때만 사용하는 화면 확인용 샘플 (API 키 없이 UI 개발할 때)
 export const MOCK_ANALYSIS: Analysis = {
@@ -9,23 +9,27 @@ export const MOCK_ANALYSIS: Analysis = {
     {
       heading: "글로벌 표준화와 현지화",
       points: [
-        "표준화는 비용 절감과 일관된 이미지를 준다.",
-        "현지화는 시장별 요구에 맞춘 대응을 가능하게 한다.",
+        { text: "**표준화**는 비용 절감과 일관된 이미지를 준다.", pages: [1, 2] },
+        { text: "**현지화**는 시장별 요구에 맞춘 대응을 가능하게 한다.", pages: [2] },
       ],
     },
     {
       heading: "글로컬라이제이션",
-      points: ["핵심 정체성은 유지하고 메시지와 제품은 현지에 맞춘다."],
+      points: [
+        { text: "핵심 정체성은 유지하고 메시지와 제품은 현지에 맞춘다.", pages: [3] },
+      ],
     },
   ],
-  concepts: [
-    { term: "글로컬라이제이션", definition: "Globalization과 Localization을 결합한 전략." },
-    { term: "브랜드 일관성", definition: "여러 시장에서 같은 브랜드 경험을 제공하는 것." },
-  ],
-  flashcards: [
-    { front: "글로컬라이제이션이란?", back: "글로벌 통합과 현지 적응을 함께 추구하는 전략" },
-  ],
 };
+
+export const MOCK_CONCEPTS: Concept[] = [
+  { term: "글로컬라이제이션", definition: "Globalization과 Localization을 결합한 전략." },
+  { term: "브랜드 일관성", definition: "여러 시장에서 같은 브랜드 경험을 제공하는 것." },
+];
+
+export const MOCK_FLASHCARDS: Flashcard[] = [
+  { front: "글로컬라이제이션이란?", back: "글로벌 통합과 현지 적응을 함께 추구하는 전략" },
+];
 
 const MOCK_QUIZ_ITEM: QuizItem = {
   question: "글로컬라이제이션 전략의 핵심은 무엇인가?",
