@@ -11,11 +11,15 @@
 루트 `.env.local`에 아래 값을 설정합니다. 실제 키는 커밋하지 않습니다.
 
 ```dotenv
-GEMINI_API_KEY=your-server-key
-OPPORTUNITIES_GEMINI_MODEL=gemini-2.5-flash
+GEMINI_API_KEYS=key1,key2
+OPPORTUNITIES_GEMINI_MODEL=gemini-3.1-flash-lite
 ```
 
-키가 없어도 통합 목록·검색·기본 추천·원문 미리보기는 동작합니다. 핵심 내용 화면은 API 키 미설정, Gemini 응답 실패, 텍스트 없는 이미지 공지를 구분해 안내합니다. `.env.local` 설정 후 개발 서버를 다시 시작해야 실제 Gemini 호출을 확인할 수 있습니다. 두 공개 페이지 수집에 별도 키는 필요하지 않습니다. 같은 `GEMINI_API_KEY`를 쓰는 학습 서비스와 모델 설정은 별개입니다.
+키는 모든 서비스가 함께 쓰는 `GEMINI_API_KEYS`(쉼표로 여러 개)에서 읽고, 공통 모듈 `lib/gemini.ts`가 요청마다 돌려 쓰며 한도·과부하이면 다음 키로 넘깁니다. 예전 `GEMINI_API_KEY`(키 하나)도 읽습니다.
+
+AI 응답은 12초 안에 와야 사용하고, 늦으면 원문 요약으로 대체합니다. 그래서 응답이 빠른 모델이 필요합니다. 확인한 바로는 `gemini-3.1-flash-lite`가 약 3초, `gemini-3.5-flash`는 약 17초라 시간 초과로 AI 요약이 쓰이지 않았습니다. 기본값 `gemini-2.5-flash`는 새로 만든 키에서 거절될 수 있습니다.
+
+키가 없어도 통합 목록·검색·기본 추천·원문 미리보기는 동작합니다. 핵심 내용 화면은 API 키 미설정, Gemini 응답 실패, 텍스트 없는 이미지 공지를 구분해 안내합니다. `.env.local` 설정 후 개발 서버를 다시 시작해야 실제 Gemini 호출을 확인할 수 있습니다. 두 공개 페이지 수집에 별도 키는 필요하지 않습니다. 학습 서비스(study)와 같은 키를 쓰지만 모델 설정은 별개입니다.
 
 ## 검증
 

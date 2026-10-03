@@ -66,7 +66,22 @@ npm run dev                  # http://localhost:3000
 
 ## 배포
 
-Vercel에 저장소를 그대로 연결한다 (루트가 Next.js 앱). 환경변수는 Vercel 설정에 따로 넣는다. 빌드는 `next build --webpack`으로 고정했다.
+Vercel에 저장소를 그대로 연결한다 (루트가 Next.js 앱, 폴더 지정 없음). Production Branch는 `master`이고, 연결하면 `master`에 머지될 때마다 자동으로 다시 배포된다. 빌드 명령은 `npm run build`(= `next build --webpack`), Node는 22 이상을 쓴다.
+
+**환경변수는 `.env.local`이 배포로 넘어가지 않으므로 Vercel 설정에 직접 넣는다.** 코드가 읽는 이름과 글자까지 같아야 하고, 바꾼 뒤에는 Redeploy해야 적용된다.
+
+| 이름 | 쓰는 서비스 | 값 |
+|---|---|---|
+| `GEMINI_API_KEYS` | study, opportunities | Gemini 키를 쉼표로 이은 값. **모든 서비스가 이 변수 하나를 함께 쓴다** (`lib/gemini.ts`) |
+| `OPPORTUNITIES_GEMINI_MODEL` | opportunities | `gemini-3.1-flash-lite` (12초 안에 응답하는 빠른 모델) |
+| `BACKEND_URL` | course-plan | Render에 배포한 Python 추천 서버 주소(끝의 `/` 없이) |
+| `AUTH_SECRET` | 로그인 | 로그인 쿠키 서명용 임의의 긴 문자열 (없으면 코드의 개발용 기본값을 쓴다) |
+
+- Gemini 키는 요청마다 다음 키부터 돌려 쓰고, 한도(429)·과부하(503)·잘못된 키이면 같은 요청을 다음 키로 이어서 시도한다. 하루 한도가 찬 (모델, 키) 조합은 30분간 건너뛴다. 서로 다른 구글 프로젝트의 키여야 한도가 따로 계산된다. 예전 `GEMINI_API_KEY`(키 하나)도 읽는다.
+- `course-plan`은 별도 Python 서버(`apps/course-recommendation/backend`)가 있어야 동작한다. Render에 먼저 배포하고(`apps/course-recommendation/render.yaml`), 그 주소를 `BACKEND_URL`에 넣는다.
+- 적용 환경은 Production만 체크한다 (Preview에도 키를 넣으면 미리보기 배포가 무료 한도를 쓴다).
+- `MOCK_AI`와 `NEXT_PUBLIC_`으로 시작하는 이름은 넣지 않는다.
+- 새 서비스가 환경변수를 추가하면 Vercel에도 같이 넣는다. 현재 이름은 `grep -rhoE "process\.env\.[A-Z_]+" app lib --include=*.ts --include=*.tsx | sort -u`로 확인한다.
 
 ## 독립 수강 추천 앱
 
