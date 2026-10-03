@@ -5,6 +5,7 @@ export type QuizItem = {
   choices: string[];
   answerIndex: number;
   explanation: string;
+  hint: string;
 };
 export type Flashcard = { front: string; back: string };
 
@@ -13,7 +14,6 @@ export type Analysis = {
   overview: string;
   sections: Section[];
   concepts: Concept[];
-  quiz: QuizItem[];
   flashcards: Flashcard[];
 };
 

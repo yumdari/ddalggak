@@ -21,6 +21,7 @@ export function errorResponse(e: unknown) {
     e instanceof Anthropic.APIError ? e.status : e instanceof ApiError ? e.status : undefined;
 
   if (status === 429 || status === 503) {
+    console.error("[ai]", status, e instanceof Error ? e.message.slice(0, 300) : e);
     return Response.json(
       { error: "AI가 지금 붐비고 있어요. 잠시 후 다시 시도해 주세요." },
       { status: 429 },

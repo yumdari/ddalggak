@@ -1,8 +1,8 @@
 import { provider } from "./config";
-import { MOCK_ANALYSIS } from "./mock";
+import { MOCK_ANALYSIS, mockQuiz } from "./mock";
 import * as claude from "./providers/claude";
 import * as gemini from "./providers/gemini";
-import type { Analysis, ChatMessage } from "./types";
+import type { Analysis, ChatMessage, QuizItem } from "./types";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const mock = process.env.MOCK_AI === "1";
@@ -13,6 +13,14 @@ export async function analyzePdf(pdfBase64: string): Promise<Analysis> {
     return MOCK_ANALYSIS;
   }
   return provider() === "claude" ? claude.analyze(pdfBase64) : gemini.analyze(pdfBase64);
+}
+
+export async function makeQuiz(pdfBase64: string, count: number): Promise<QuizItem[]> {
+  if (mock) {
+    await sleep(1200);
+    return mockQuiz(count);
+  }
+  return provider() === "claude" ? claude.quiz(pdfBase64, count) : gemini.quiz(pdfBase64, count);
 }
 
 export async function askTutor(pdfBase64: string, messages: ChatMessage[]): Promise<string> {

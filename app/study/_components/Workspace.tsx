@@ -2,14 +2,17 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import type { Analysis } from "@/app/study/_lib/types";
+import type { Analysis, QuizItem } from "@/app/study/_lib/types";
 import Concepts from "./Concepts";
 import Flashcards from "./Flashcards";
-import Quiz from "./Quiz";
+import Quiz, { type QuizStatus } from "./Quiz";
 import Summary from "./Summary";
 import Tutor from "./Tutor";
 
 const MAX_BYTES = 4 * 1024 * 1024;
+const SAMPLE_URL = "/study/sample.pdf";
+const NOTICE =
+  "AI가 만든 내용은 틀릴 수 있어요. 중요한 내용은 원문에서 꼭 확인하세요.";
 
 const TABS = ["요약", "퀴즈", "플래시카드", "핵심 개념", "AI 튜터"] as const;
 type Tab = (typeof TABS)[number];
@@ -34,6 +37,10 @@ export default function Workspace() {
   const [tab, setTab] = useState<Tab>("요약");
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [quiz, setQuiz] = useState<QuizItem[] | null>(null);
+  const [quizRun, setQuizRun] = useState(0);
+  const [quizStatus, setQuizStatus] = useState<QuizStatus>("idle");
+  const [quizError, setQuizError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -55,6 +62,7 @@ export default function Workspace() {
 
     setPdfUrl(URL.createObjectURL(file));
     setTab("요약");
+    resetQuiz();
     setState({ status: "loading", fileName: file.name });
 
     try {
@@ -77,8 +85,47 @@ export default function Workspace() {
     }
   }
 
+  async function loadSample() {
+    try {
+      const res = await fetch(SAMPLE_URL);
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      await handleFile(new File([blob], "샘플 강의자료 - 퍼셉트론.pdf", { type: "application/pdf" }));
+    } catch {
+      setState({ status: "error", message: "샘플 파일을 불러오지 못했어요." });
+    }
+  }
+
+  function resetQuiz() {
+    setQuiz(null);
+    setQuizStatus("idle");
+    setQuizError(null);
+  }
+
+  async function generateQuiz(count: number) {
+    if (state.status !== "done") return;
+    setQuizStatus("loading");
+    setQuizError(null);
+    try {
+      const res = await fetch("/study/api/quiz", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pdfBase64: state.pdfBase64, count }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "퀴즈를 만들지 못했어요.");
+      setQuiz(json.quiz as QuizItem[]);
+      setQuizRun((n) => n + 1);
+      setQuizStatus("idle");
+    } catch (e) {
+      setQuizError(e instanceof Error ? e.message : "퀴즈를 만들지 못했어요.");
+      setQuizStatus("error");
+    }
+  }
+
   function reset() {
     setPdfUrl(null);
+    resetQuiz();
     setState({ status: "idle" });
   }
 
@@ -104,7 +151,7 @@ export default function Workspace() {
             {pdfUrl && <iframe src={pdfUrl} title={fileName} className="h-full w-full" />}
           </div>
 
-          <div className="flex min-h-0 flex-col">
+          <div className="flex min-h-0 min-w-0 flex-col">
             <nav className="flex gap-2 overflow-x-auto border-b border-line px-4 py-3">
               {TABS.map((t) => (
                 <button
@@ -121,12 +168,33 @@ export default function Workspace() {
               ))}
             </nav>
             <div className="min-h-0 flex-1 overflow-y-auto">
-              {tab === "요약" && <Summary analysis={analysis} />}
-              {tab === "퀴즈" && <Quiz items={analysis.quiz} />}
-              {tab === "플래시카드" && <Flashcards cards={analysis.flashcards} />}
-              {tab === "핵심 개념" && <Concepts concepts={analysis.concepts} />}
-              {tab === "AI 튜터" && <Tutor pdfBase64={pdfBase64} />}
+              {/* 탭을 옮겨도 퀴즈 진행·튜터 대화가 유지되도록 모두 마운트해 두고 숨긴다 */}
+              <div hidden={tab !== "요약"}>
+                <Summary analysis={analysis} />
+              </div>
+              <div hidden={tab !== "퀴즈"}>
+                <Quiz
+                  items={quiz}
+                  runId={quizRun}
+                  status={quizStatus}
+                  error={quizError}
+                  onGenerate={generateQuiz}
+                  onReset={resetQuiz}
+                />
+              </div>
+              <div hidden={tab !== "플래시카드"}>
+                <Flashcards cards={analysis.flashcards} />
+              </div>
+              <div hidden={tab !== "핵심 개념"}>
+                <Concepts concepts={analysis.concepts} />
+              </div>
+              <div hidden={tab !== "AI 튜터"} className="h-full">
+                <Tutor pdfBase64={pdfBase64} />
+              </div>
             </div>
+            <p className="border-t border-line px-4 py-2 text-center text-xs text-muted">
+              {NOTICE}
+            </p>
           </div>
         </div>
       </div>
@@ -149,7 +217,7 @@ export default function Workspace() {
           강의자료 PDF를 올려 보세요
         </h1>
         <p className="mt-3 text-center text-muted">
-          요약, 핵심 개념, 퀴즈, 플래시카드를 한 번에 만들어 드려요.
+          요약, 핵심 개념, 플래시카드를 만들어 드려요. 퀴즈는 요약을 본 뒤 원하는 만큼 만들 수 있어요.
         </p>
 
         {state.status === "loading" ? (
@@ -182,6 +250,16 @@ export default function Workspace() {
           </button>
         )}
 
+        {state.status !== "loading" && (
+          <button
+            type="button"
+            onClick={loadSample}
+            className="mx-auto mt-4 text-sm text-muted underline underline-offset-4 hover:text-foreground"
+          >
+            파일이 없다면 샘플 강의자료로 체험하기
+          </button>
+        )}
+
         <input
           ref={inputRef}
           type="file"
@@ -198,6 +276,12 @@ export default function Workspace() {
             {state.message}
           </p>
         )}
+
+        <p className="mt-10 text-center text-xs leading-relaxed text-muted">
+          {NOTICE} 올린 PDF는 서버에 저장되지 않아요.
+          <br />
+          강의자료는 본인 학습 용도로만 사용해 주세요.
+        </p>
       </main>
     </div>
   );
