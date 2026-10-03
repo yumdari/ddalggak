@@ -41,6 +41,8 @@ jobs:
         working-directory: apps/course-recommendation/frontend
       - run: npm run lint
         working-directory: apps/course-recommendation/frontend
+      - run: npm run test:syllabi
+        working-directory: apps/course-recommendation/frontend
       - run: npm run typecheck
         working-directory: apps/course-recommendation/frontend
       - run: npm run build

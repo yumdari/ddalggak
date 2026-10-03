@@ -37,9 +37,9 @@ def conflicts(a: Course, b: Course) -> bool:
 def exclusion(course: Course, profile: Profile, failed: set[str]) -> str | None:
     if course.course_id in failed:
         return "수강 실패로 제외"
-    if course.course_id in profile.completed_ids:
+    if course.course_id in (profile.completed_ids or []):
         return "이미 이수한 과목"
-    missing = set(course.prerequisites) - set(profile.completed_ids)
+    missing = set(course.prerequisites) - set(profile.completed_ids or []) if profile.completed_ids is not None else set()
     if missing:
         return "선수과목 미이수: " + ", ".join(sorted(missing))
     if any(m.day in profile.free_days for m in course.schedule):
@@ -62,8 +62,9 @@ def similarity(user: dict, course: dict, keys: list[str]) -> float:
 def score(course: Course, p: Profile) -> dict:
     user, style = p.learning.model_dump(), course.learning_style.model_dump()
     campus = p.campus.model_dump()
-    exploratory = p.career == "아직 모름" or p.career_confidence < 40
-    career = 100 if p.career in course.career_tags else 65 if course.category == "전공기초" else 35
+    careers = p.careers if p.careers is not None else [p.career]
+    exploratory = not careers or careers == ["아직 모름"] or (p.careers is None and p.career_confidence < 40)
+    career = 100 if set(careers) & set(course.career_tags) else 65 if course.category == "전공기초" else 35
     if exploratory:
         career = 75 + 0.25 * course.campus_life.exploration
     # Free days are hard constraints; preferred/avoided days are soft signals.
@@ -89,6 +90,9 @@ def score(course: Course, p: Profile) -> dict:
         "campus": similarity(campus, course.campus_life.model_dump(), list(campus)),
         "academic": academic,
     }
+    if course.course_id.startswith("upload-"):
+        # No evidence about course traits: keep those components neutral.
+        parts = {k: v if k == "schedule" else 50 for k, v in parts.items()}
     parts = {k: round(v, 1) for k, v in parts.items()}
     return {"total": round(sum(parts[k] * w for k, w in WEIGHTS.items()), 1), "parts": parts}
 
@@ -96,21 +100,29 @@ def score(course: Course, p: Profile) -> dict:
 def facts(course: Course, p: Profile, scored: dict) -> list[str]:
     strongest = sorted(scored["parts"], key=lambda k: (-scored["parts"][k], k))[:2]
     result = [f"{LABELS[k]} 적합도 {scored['parts'][k]:g}점" for k in strongest]
-    if p.career in course.career_tags:
-        result.append(f"{p.career} 연관 과목")
+    matching = set(p.careers if p.careers is not None else [p.career]) & set(course.career_tags)
+    if matching:
+        result.append(f"{', '.join(sorted(matching))} 연관 과목")
     if p.learning.team_project <= 30 and course.learning_style.team_project <= 30:
         result.append("팀 프로젝트 비중이 낮은 수업 방식")
     if p.free_days:
         result.append(f"{'·'.join(p.free_days)}요일 공강 조건 충족")
-    result.append("선수과목·시간 충돌·학점 제한 검증 완료")
+    result.append("시간 충돌·학점 제한 검증 완료" if p.completed_ids is None else "선수과목·시간 충돌·학점 제한 검증 완료")
     return result
 
 
 def recommend(request: RecommendRequest) -> dict:
     p = request.profile
     courses = load_courses()
+    known_ids = {c.course_id for c in courses}
+    imported_ids = [c.course_id for c in request.custom_courses]
+    if len(set(imported_ids)) != len(imported_ids) or known_ids.intersection(imported_ids):
+        raise ValueError("업로드 과목 ID가 중복되었습니다.")
+    if any(not cid.startswith("upload-") for cid in imported_ids):
+        raise ValueError("업로드 과목 ID가 올바르지 않습니다.")
+    courses = (*courses, *request.custom_courses)
     by_id = {c.course_id: c for c in courses}
-    all_ids = set(p.completed_ids + p.required_ids + request.successful_ids + request.failed_ids + request.current_ids)
+    all_ids = set((p.completed_ids or []) + p.required_ids + request.successful_ids + request.failed_ids + request.current_ids)
     unknown = all_ids - by_id.keys()
     if unknown:
         raise ValueError("존재하지 않는 과목: " + ", ".join(sorted(unknown)))
@@ -132,7 +144,7 @@ def recommend(request: RecommendRequest) -> dict:
         else:
             pool.append(c)
     scores = {c.course_id: score(c, p) for c in pool}
-    required = set(p.required_ids) - set(p.completed_ids)
+    required = set(p.required_ids) - set(p.completed_ids or [])
 
     # Registration recovery preserves other pending courses when feasible.
     def rank(c):
@@ -160,6 +172,10 @@ def recommend(request: RecommendRequest) -> dict:
             )
         selected.append(candidates[0])
     warnings = []
+    if p.completed_ids is None:
+        warnings.append("이수 내역을 입력받지 않아 선수과목 충족 여부와 재수강 여부는 확인하지 않았습니다. 학교 수강 요건을 확인하세요.")
+    if request.custom_courses:
+        warnings.append("업로드 과목의 시간과 학점은 확인한 입력으로 계산합니다. 성향·평가 비중은 중립값이며 실제 수강 요건은 학교에서 확인하세요.")
     missing_required = required - {c.course_id for c in selected}
     if missing_required:
         warnings.append(

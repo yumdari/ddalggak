@@ -31,3 +31,15 @@
 .root :global(.chip){border-radius:999px;padding:8px 12px}
 .root :global(.career-card),.root :global(.day){border-radius:14px}
 .root :global(.info-box),.root :global(.notice-box),.root :global(.warning-box),.root :global(.error-box){border-radius:16px}
+.root :global(.preference-field) { border: 0; min-width: 0; padding: 12px 0; }
+.root :global(.preference-field legend) { font-weight: 700; font-size: 14px; }
+.root :global(.preference-field p), .root :global(.syllabus-upload p) { font-size: 12px; color: var(--muted); margin: 8px 0; }
+.root :global(.preference-options) { display: flex; gap: 6px; margin-top: 12px; }
+.root :global(.preference-options label) { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 10px 4px; border: 1px solid var(--line); border-radius: 7px; font-size: 12px; cursor: pointer; }
+.root :global(.preference-options label:has(input:checked)) { background: #eaf2f8; border-color: var(--green); }
+.root :global(.syllabus-upload) { margin-top: 28px; }
+.root :global(.syllabus-draft) { border: 1px solid var(--line); padding: 15px; border-radius: 8px; margin: 15px 0; }
+.root :global(.meeting-row), .root :global(.syllabus-actions), .root :global(.syllabus-confirmed) { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; align-items: center; }
+.root :global(.meeting-row label) { display: flex; flex-direction: column; font-size: 12px; gap: 6px; }
+.root :global(.meeting-row input), .root :global(.meeting-row select) { padding: 8px; border: 1px solid var(--line); border-radius: 5px; }
+.root :global(.syllabus-confirmed) { padding: 12px; background: #eaf2f8; font-size: 12px; justify-content: space-between; }

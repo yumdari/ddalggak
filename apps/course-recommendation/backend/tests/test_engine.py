@@ -155,3 +155,42 @@ def test_randomized_profiles_and_alternatives_obey_constraints(seed):
     p.compact_days = bool(seed % 2)
     p.completed_ids = rng.sample([c.course_id for c in load_courses()], rng.randint(0, 10))
     assert_feasible(recommend(RecommendRequest(profile=p)), p)
+
+
+def test_multiple_careers_match_any_selection_and_order_does_not_matter():
+    from app.engine import score
+    course = next(c for c in load_courses() if "Embedded Software" in c.career_tags)
+    p = Profile(careers=["Frontend", "Embedded Software", "Data"])
+    assert score(course, p)["parts"]["career"] == 100
+    assert score(course, p) == score(course, Profile(careers=list(reversed(p.careers))))
+
+
+@pytest.mark.parametrize("careers", [["A", "B", "C", "D"], ["A", "A"], [""], ["아직 모름", "Data"]])
+def test_invalid_careers_rejected(careers):
+    with pytest.raises(ValueError):
+        Profile(careers=careers)
+
+
+def test_missing_history_does_not_invent_completed_courses():
+    p = Profile(completed_ids=None, required_ids=["CS301"])
+    result = recommend(RecommendRequest(profile=p))
+    assert any(r["course"]["course_id"] == "CS301" for r in result["recommendations"])
+    assert any("선수과목 충족 여부" in w for w in result["warnings"])
+    assert all("선수과목·시간" not in r["reason"] for r in result["recommendations"])
+
+
+def test_uploaded_course_is_required_and_survives_recovery():
+    course = load_courses()[0].model_copy(update={"course_id": "upload-test", "name": "업로드 수업"})
+    p = Profile(completed_ids=None, required_ids=[course.course_id])
+    req = RecommendRequest(profile=p, custom_courses=[course])
+    result = recommend(req)
+    assert any(r["course"]["course_id"] == course.course_id for r in result["recommendations"])
+    current = [r["course"]["course_id"] for r in result["recommendations"]]
+    failed = next(cid for cid in current if cid != course.course_id)
+    result = recommend(RecommendRequest(profile=p, custom_courses=[course], successful_ids=[course.course_id], failed_ids=[failed], current_ids=current))
+    assert course.course_id in result["successful_ids"]
+    assert failed not in [r["course"]["course_id"] for r in result["recommendations"]]
+    blocked = recommend(RecommendRequest(profile=Profile(required_ids=[course.course_id], free_days=[course.schedule[0].day]), custom_courses=[course]))
+    assert any("업로드 수업" in w for w in blocked["warnings"])
+    with pytest.raises(ValueError):
+        recommend(RecommendRequest(profile=p, custom_courses=[course, course]))

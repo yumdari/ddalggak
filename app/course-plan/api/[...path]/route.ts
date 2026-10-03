@@ -13,7 +13,7 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
   const base = process.env.BACKEND_URL || "http://127.0.0.1:8000";
   try {
     const body = request.method === "POST" ? await request.text() : undefined;
-    if (body && body.length > 32_000) return NextResponse.json({ detail: "입력이 너무 큽니다." }, { status: 413 });
+    if (body && body.length > 100_000) return NextResponse.json({ detail: "입력이 너무 큽니다." }, { status: 413 });
     const response = await fetch(`${base.replace(/\/$/, "")}/api/${endpoint}`, {
       method: request.method, headers: { "Content-Type": "application/json" }, body,
       cache: "no-store", signal: AbortSignal.timeout(55_000),
