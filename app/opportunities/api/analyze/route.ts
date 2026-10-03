@@ -1,5 +1,4 @@
-import { analyzeOpportunity } from "../../_lib/ai";
-import { getOpportunities } from "../../_lib/feeds";
+import { getOpportunityAnalysis } from "../../service";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -9,9 +8,9 @@ export async function POST(request: Request) {
     return Response.json({ error: "공고 ID가 올바르지 않습니다." }, { status: 400 });
   }
   try {
-    const opportunity = (await getOpportunities()).find((item) => item.id === id);
-    if (!opportunity) return Response.json({ error: "공고를 찾을 수 없습니다." }, { status: 404 });
-    return Response.json({ analysis: await analyzeOpportunity(opportunity) });
+    const analysis = await getOpportunityAnalysis(id);
+    if (!analysis) return Response.json({ error: "공고를 찾을 수 없습니다." }, { status: 404 });
+    return Response.json({ analysis });
   } catch {
     return Response.json({ error: "공고를 분석하지 못했습니다." }, { status: 503 });
   }

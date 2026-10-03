@@ -1,6 +1,4 @@
-import { recommendOpportunities } from "../../_lib/ai";
-import { getOpportunities } from "../../_lib/feeds";
-import { searchOpportunities } from "../../_lib/catalog";
+import { getRecommendations } from "../../service";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -16,8 +14,7 @@ export async function POST(request: Request) {
   const interests = [...new Set(input.interests.map((value: string) => value.trim().slice(0, 40)).filter(Boolean))].slice(0, 6);
   if (!major && !interests.length) return Response.json({ error: "전공이나 관심 분야를 하나 이상 입력해 주세요." }, { status: 400 });
   try {
-    const items = searchOpportunities(await getOpportunities(), { sort: "recent" });
-    return Response.json(await recommendOpportunities(items, { major, grade, interests }));
+    return Response.json(await getRecommendations({ major, grade, interests }));
   } catch {
     return Response.json({ error: "추천 공고를 불러오지 못했습니다." }, { status: 503 });
   }

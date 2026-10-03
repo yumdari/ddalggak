@@ -1,5 +1,4 @@
-import { getOpportunities } from "../../_lib/feeds";
-import { searchOpportunities } from "../../_lib/catalog";
+import { listOpportunities } from "../../service";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -8,7 +7,7 @@ export async function GET(request: Request) {
   const deadline = url.searchParams.get("deadline") ?? "all";
   const sort = url.searchParams.get("sort") ?? "recent";
   try {
-    const items = searchOpportunities(await getOpportunities(), {
+    const items = await listOpportunities({
       query, field,
       deadline: deadline === "week" || deadline === "known" ? deadline : "all",
       sort: sort === "deadline" ? "deadline" : "recent",

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { ApiError, GoogleGenAI } from "@google/genai";
 import { rankOpportunities, type Opportunity, type Profile, type Recommendation } from "./catalog";
 
 type GroundedField = { text: string; evidence: string };
@@ -20,33 +21,46 @@ const FIELD_SCHEMA = {
   required: ["text", "evidence"],
 };
 
-async function structured<T>(name: string, schema: object, instructions: string, input: string): Promise<T | null> {
-  const key = process.env.OPENAI_API_KEY;
-  if (!key) return null;
-  try {
-    const response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: process.env.OPPORTUNITIES_OPENAI_MODEL || "gpt-4o-mini",
-        instructions,
-        input,
-        text: { format: { type: "json_schema", name, strict: true, schema } },
-      }),
-      signal: AbortSignal.timeout(15_000),
+let client: GoogleGenAI | null = null;
+
+function geminiClient(key: string): GoogleGenAI {
+  if (!client) {
+    client = new GoogleGenAI({
+      apiKey: key,
+      ...(process.env.OPPORTUNITIES_GEMINI_BASE_URL
+        ? { httpOptions: { baseUrl: process.env.OPPORTUNITIES_GEMINI_BASE_URL } }
+        : {}),
     });
-    if (!response.ok) return null;
-    const data = await response.json() as {
-      status?: string;
-      output?: { type?: string; content?: { type?: string; text?: string }[] }[];
-    };
-    if (data.status !== "completed") return null;
-    const text = data.output?.flatMap((item) => item.type === "message" ? item.content ?? [] : [])
-      .filter((part) => part.type === "output_text").map((part) => part.text ?? "").join("");
-    return text ? JSON.parse(text) as T : null;
-  } catch {
-    return null;
   }
+  return client;
+}
+
+async function structured<T>(schema: object, instructions: string, input: string): Promise<T | null> {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) return null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const response = await geminiClient(key).models.generateContent({
+        model: process.env.OPPORTUNITIES_GEMINI_MODEL || "gemini-2.5-flash",
+        contents: input,
+        config: {
+          systemInstruction: instructions,
+          responseMimeType: "application/json",
+          responseJsonSchema: schema,
+          maxOutputTokens: 2500,
+          abortSignal: AbortSignal.timeout(12_000),
+        },
+      });
+      if (!response.text || response.candidates?.[0]?.finishReason === "MAX_TOKENS") return null;
+      return JSON.parse(response.text) as T;
+    } catch (error) {
+      if (!(error instanceof ApiError) || ![429, 503].includes(error.status) || attempt > 0) {
+        return null;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  }
+  return null;
 }
 
 function validatedField(raw: unknown, source: string): GroundedField {
@@ -67,7 +81,6 @@ export async function analyzeOpportunity(opportunity: Opportunity): Promise<Anal
   };
   const keys = ["overview", "eligibility", "field", "benefits", "schedule", "deliverables"];
   const result = await structured<Record<string, unknown>>(
-    "opportunity_analysis",
     {
       type: "object", additionalProperties: false,
       properties: Object.fromEntries(keys.map((key) => [key, FIELD_SCHEMA])),
@@ -94,7 +107,6 @@ export async function recommendOpportunities(items: Opportunity[], profile: Prof
     text: opportunity.description.slice(0, 900),
   }));
   const result = await structured<{ recommendations: { id: string; reason: string; evidence: string }[] }>(
-    "opportunity_recommendations",
     {
       type: "object", additionalProperties: false,
       properties: {

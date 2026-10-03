@@ -1,17 +1,19 @@
 # 기회 정보 큐레이션
 
-`/opportunities`에서 두 대학의 공개 RSS를 통합해 검색하고, 전공·관심 분야로 공고를 추천받습니다. 공고를 열면 AI 요약을 요청하며, 결과마다 실제 RSS 본문에서 확인한 근거 문구를 표시합니다.
+`/opportunities`에서 두 대학의 공개 RSS를 통합해 검색하고, 전공·관심 분야로 공고를 추천받습니다. 공고를 열면 Gemini 요약을 요청하며, 결과마다 실제 RSS 본문에서 확인한 근거 문구를 표시합니다.
+
+`service.ts`가 이 서비스의 상위 진입점입니다. RSS 수집(`_lib/feeds.ts`), 검색·추천 규칙(`_lib/catalog.ts`), Gemini 요약·추천(`_lib/ai.ts`)을 묶어 세 API 라우트에 제공합니다. 화면은 `_components/Workspace.tsx`에서 관리합니다.
 
 ## 환경변수
 
 루트 `.env.local`에 아래 값을 설정합니다. 실제 키는 커밋하지 않습니다.
 
 ```dotenv
-OPENAI_API_KEY=your-server-key
-OPPORTUNITIES_OPENAI_MODEL=gpt-4o-mini
+GEMINI_API_KEY=your-server-key
+OPPORTUNITIES_GEMINI_MODEL=gemini-2.5-flash
 ```
 
-키가 없어도 통합 목록·검색·기본 추천·원문 미리보기는 동작합니다. 화면은 AI 사용 여부를 표시합니다. RSS 수집에 별도 키는 필요하지 않습니다.
+키가 없어도 통합 목록·검색·기본 추천·원문 미리보기는 동작합니다. 화면은 Gemini 사용 여부를 표시합니다. RSS 수집에 별도 키는 필요하지 않습니다. 같은 `GEMINI_API_KEY`를 쓰는 학습 서비스와 모델 설정은 별개입니다.
 
 ## 검증
 
