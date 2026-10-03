@@ -8,7 +8,7 @@ export default function SiteFooter() {
         <div>
           <p className="text-xl font-bold text-white">딸깍</p>
           <p className="mt-3 text-sm leading-relaxed">
-            AI 기반 학업지원 정보중계 플랫폼
+            AI 기반 학업지원 정보중개 플랫폼
             <br />
             공모전 큐레이션 · 수강신청 플랜 · 강의자료 요약·퀴즈
           </p>
