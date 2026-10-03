@@ -6,6 +6,7 @@ import { rankOpportunities, type Opportunity, type Profile, type Recommendation 
 type GroundedField = { text: string; evidence: string };
 export type Analysis = {
   mode: "ai" | "source";
+  fallbackReason?: "missing-key" | "unavailable" | "no-text";
   overview: GroundedField;
   eligibility: GroundedField;
   field: GroundedField;
@@ -76,9 +77,11 @@ export async function analyzeOpportunity(opportunity: Opportunity): Promise<Anal
   const source = `${opportunity.title}\n${opportunity.description}`;
   const fallback: Analysis = {
     mode: "source",
-    overview: { text: opportunity.description.slice(0, 320) || opportunity.title, evidence: "" },
+    fallbackReason: !opportunity.description ? "no-text" : !process.env.GEMINI_API_KEY ? "missing-key" : "unavailable",
+    overview: { text: opportunity.description.slice(0, 1200) || opportunity.title, evidence: "" },
     eligibility: EMPTY, field: EMPTY, benefits: EMPTY, schedule: EMPTY, deliverables: EMPTY,
   };
+  if (!opportunity.description) return fallback;
   const keys = ["overview", "eligibility", "field", "benefits", "schedule", "deliverables"];
   const result = await structured<Record<string, unknown>>(
     {

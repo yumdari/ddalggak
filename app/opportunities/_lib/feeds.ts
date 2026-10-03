@@ -18,6 +18,7 @@ export const SOURCES = {
 
 const MAX_PAGE_BYTES = 1_000_000;
 let cache: { expires: number; items: Opportunity[] } | null = null;
+const detailCache = new Map<string, { expires: number; description: string }>();
 
 function decodeEntities(value: string): string {
   const named: Record<string, string> = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " " };
@@ -72,6 +73,21 @@ export function parseContestList(html: string): Opportunity[] {
     return [{ id: opportunityId(sourceUrl), title, source: SOURCES.contest.name, sourceUrl,
       publishedAt, deadline, category: "contest", field: classifyField(`${section} ${title} ${description}`, "contest"), description }];
   });
+}
+
+export function parseContestDetail(html: string): string {
+  const page = html.split('<div class="view_cont_area">')[1]?.split('<div class="tab_cont">')[0] ?? "";
+  const facts = [...page.matchAll(/<tr[^>]*>\s*<th[^>]*>([\s\S]*?)<\/th>\s*<td[^>]*>([\s\S]*?)<\/td>\s*<\/tr>/gi)]
+    .map((match) => [plainText(match[1]), plainText(match[2])])
+    .filter(([label, value]) => label && value && label !== "홈페이지")
+    .map(([label, value]) => `${label}: ${value}`);
+  const detail = html.split('<div class="view_detail_area">')[1]?.split('<h2>공모전명</h2>')[1] ?? "";
+  const sections = [...detail.matchAll(/<h2[^>]*>([\s\S]*?)<\/h2>\s*<p[^>]*>([\s\S]*?)<\/p>/gi)]
+    .slice(0, 10)
+    .map((match) => [plainText(match[1]), plainText(match[2])])
+    .filter(([label, value]) => label && value)
+    .map(([label, value]) => `${label}: ${value}`);
+  return [...facts, ...sections].join("\n").slice(0, 4000);
 }
 
 type ScholarshipListing = { title: string; sourceUrl: string; publishedAt: string | null };
@@ -142,6 +158,23 @@ async function fetchScholarships(): Promise<Opportunity[]> {
     }
   }
   return items;
+}
+
+export async function enrichOpportunityForAnalysis(item: Opportunity): Promise<Opportunity> {
+  if (item.category !== "contest" || item.source !== SOURCES.contest.name) return item;
+  const url = new URL(item.sourceUrl);
+  if (url.hostname !== "www.contestkorea.com" || url.pathname !== "/sub/view.php") return item;
+  const cached = detailCache.get(item.sourceUrl);
+  if (cached && cached.expires > Date.now()) return { ...item, description: cached.description };
+  try {
+    const detail = parseContestDetail(await fetchPage(item.sourceUrl));
+    if (!detail) return item;
+    const description = `${item.description}\n${detail}`.slice(0, 4500);
+    detailCache.set(item.sourceUrl, { expires: Date.now() + 10 * 60_000, description });
+    return { ...item, description };
+  } catch {
+    return item;
+  }
 }
 
 export async function getOpportunities(): Promise<Opportunity[]> {
