@@ -9,6 +9,7 @@ import type { Analysis, StoredDoc } from "@/app/study/_lib/types";
 import DocView from "./DocView";
 import Library from "./Library";
 import Upload from "./Upload";
+import "./motion.css";
 
 const SAMPLE_URL = "/study/sample.pdf";
 
@@ -167,7 +168,7 @@ export default function Workspace() {
   const hasDocs = (docs?.length ?? 0) > 0;
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="study-root flex flex-1 flex-col">
       <header className="flex items-center justify-between border-b border-line px-5 py-4 sm:px-8">
         <Link href="/study" className="text-xl font-bold tracking-tight">
           딸각 <span className="font-normal text-muted">· 강의자료 요약</span>

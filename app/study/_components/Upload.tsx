@@ -17,7 +17,7 @@ export default function Upload({ loadingName, error, onFile, onSample }: Props) 
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-5 py-16">
+    <main className="panel-in mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-5 py-16">
       <h1 className="text-center text-3xl font-bold tracking-tight">강의자료 PDF를 올려 보세요</h1>
       <p className="mt-3 text-center text-muted">
         먼저 요약을 만들어 드려요. 핵심 개념, 플래시카드, 퀴즈는 탭을 열 때 바로 만들어요.

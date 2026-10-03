@@ -120,27 +120,26 @@ export default function DocView({
   const title = doc.analysis.title || doc.name;
 
   return (
-    <div className="flex h-dvh">
+    <div className="study-root flex h-dvh">
       <DocRail
         listOpen={sidebarOpen}
         onToggleList={() => setSidebarOpen((v) => !v)}
         onNew={onNew}
       />
-      {sidebarOpen && (
-        <DocSidebar
-          docs={docs}
-          currentId={doc.id}
-          onSwitch={(d) => {
-            closeOnMobile();
-            onSwitch(d);
-          }}
-          onNew={() => {
-            closeOnMobile();
-            onNew();
-          }}
-          onClose={() => setSidebarOpen(false)}
-        />
-      )}
+      <DocSidebar
+        open={sidebarOpen}
+        docs={docs}
+        currentId={doc.id}
+        onSwitch={(d) => {
+          closeOnMobile();
+          onSwitch(d);
+        }}
+        onNew={() => {
+          closeOnMobile();
+          onNew();
+        }}
+        onClose={() => setSidebarOpen(false)}
+      />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="grid grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-line px-4 py-3 text-sm">
@@ -170,7 +169,7 @@ export default function DocView({
 
         <div className="grid min-h-0 flex-1 lg:grid-cols-2">
           <div
-            className={`${showPdf ? "block" : "hidden"} min-h-0 border-r border-line bg-soft lg:block`}
+            className={`${showPdf ? "block" : "hidden"} panel-in min-h-0 border-r border-line bg-soft lg:block`}
           >
             <iframe
               key={page?.jump ?? 0}
@@ -180,7 +179,7 @@ export default function DocView({
             />
           </div>
 
-          <div className={`${showPdf ? "hidden" : "flex"} min-h-0 min-w-0 flex-col lg:flex`}>
+          <div className={`${showPdf ? "hidden" : "flex"} panel-in min-h-0 min-w-0 flex-col lg:flex`}>
             <nav className="overflow-x-auto px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <div className="mx-auto flex w-max gap-1">
                 {TABS.map((t) => (
@@ -202,10 +201,10 @@ export default function DocView({
 
             <div className="min-h-0 flex-1 overflow-y-auto">
               {/* 탭을 옮겨도 퀴즈 진행·튜터 대화가 유지되도록 모두 마운트해 두고 숨긴다 */}
-              <div hidden={tab !== "요약"}>
+              <div hidden={tab !== "요약"} className="panel-in">
                 <Summary analysis={doc.analysis} onJump={jumpTo} />
               </div>
-              <div hidden={tab !== "퀴즈"}>
+              <div hidden={tab !== "퀴즈"} className="panel-in">
                 <Quiz
                   items={doc.quiz}
                   runId={quizRun}
@@ -215,7 +214,7 @@ export default function DocView({
                   onReset={() => onUpdate({ quiz: null })}
                 />
               </div>
-              <div hidden={tab !== "플래시카드"}>
+              <div hidden={tab !== "플래시카드"} className="panel-in">
                 <LazyPanel
                   state={aids.flashcards}
                   ready={doc.flashcards !== null}
@@ -229,7 +228,7 @@ export default function DocView({
                   <RemakeButton onClick={() => onUpdate({ flashcards: null })} />
                 </LazyPanel>
               </div>
-              <div hidden={tab !== "핵심 개념"}>
+              <div hidden={tab !== "핵심 개념"} className="panel-in">
                 <LazyPanel
                   state={aids.concepts}
                   ready={doc.concepts !== null}
@@ -243,7 +242,7 @@ export default function DocView({
                   <RemakeButton onClick={() => onUpdate({ concepts: null })} />
                 </LazyPanel>
               </div>
-              <div hidden={tab !== "AI 튜터"} className="h-full">
+              <div hidden={tab !== "AI 튜터"} className="panel-in h-full">
                 <Tutor pdfBase64={pdfBase64} />
               </div>
             </div>

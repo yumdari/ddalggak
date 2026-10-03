@@ -98,13 +98,13 @@ export default function Tutor({ pdfBase64 }: { pdfBase64: string }) {
         <div className="mx-auto max-w-3xl space-y-6 px-6 py-6">
           {messages.map((m, i) =>
             m.role === "user" ? (
-              <div key={i} className="flex justify-end">
+              <div key={i} className="panel-in flex justify-end">
                 <p className="max-w-[85%] whitespace-pre-wrap rounded-2xl bg-soft px-4 py-2 text-sm leading-relaxed">
                   {m.content}
                 </p>
               </div>
             ) : (
-              <div key={i} className="text-sm">
+              <div key={i} className="panel-in text-sm">
                 <Markdown>{m.content}</Markdown>
                 <div className="mt-2 flex items-center gap-4 text-xs text-muted">
                   <button
@@ -188,7 +188,7 @@ export default function Tutor({ pdfBase64 }: { pdfBase64: string }) {
               {menuOpen && (
                 <ul
                   role="listbox"
-                  className="absolute bottom-full right-0 mb-2 w-36 overflow-hidden rounded-xl border border-line bg-background py-1 shadow-lg"
+                  className="menu-in absolute bottom-full right-0 mb-2 w-36 overflow-hidden rounded-xl border border-line bg-background py-1 shadow-lg"
                 >
                   {MODES.map((o) => (
                     <li key={o.id} role="option" aria-selected={o.id === mode}>
