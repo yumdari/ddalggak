@@ -109,7 +109,7 @@ export default function Landing() {
 
           <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-5 py-20 sm:py-28 lg:grid-cols-[1.1fr_1fr]">
             <div>
-              <Tag label="딸깍" text="AI 기반 학업지원 정보중계 플랫폼" />
+              <Tag label="딸깍" text="AI 기반 학업지원 정보중개 플랫폼" />
               <h1 className="mt-7 text-4xl font-bold leading-[1.2] tracking-tight text-brand-ink sm:text-6xl">
                 흩어진 학업 정보,
                 <br />
