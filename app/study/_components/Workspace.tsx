@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { deleteDoc, listDocs, saveDoc } from "@/app/study/_lib/store";
+import { firstPageThumb } from "@/app/study/_lib/thumbnail";
 import type { Analysis, StoredDoc } from "@/app/study/_lib/types";
 import DocView from "./DocView";
 import Library from "./Library";
@@ -31,9 +32,17 @@ export default function Workspace() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    listDocs().then((list) => {
+    listDocs().then(async (list) => {
       setDocs(list);
       if (list.length === 0) setView("upload");
+
+      // 미리보기가 없는 이전 문서는 하나씩 만들어 채운다
+      for (const doc of list.filter((d) => !d.thumb)) {
+        const thumb = await firstPageThumb(doc.pdf);
+        if (!thumb) continue;
+        saveDoc({ ...doc, thumb });
+        setDocs((cur) => cur?.map((d) => (d.id === doc.id ? { ...d, thumb } : d)) ?? cur);
+      }
     });
   }, []);
 
@@ -90,6 +99,7 @@ export default function Workspace() {
         name: file.name,
         createdAt: Date.now(),
         pdf: file,
+        thumb: (await firstPageThumb(file)) ?? undefined,
         analysis: json as Analysis,
         concepts: null,
         flashcards: null,

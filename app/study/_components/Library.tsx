@@ -37,10 +37,20 @@ export default function Library({
           <div key={d.id} className="relative flex flex-col">
             <button
               onClick={() => onOpen(d)}
-              className="flex min-h-40 flex-1 flex-col justify-between rounded-xl border border-line p-4 text-left hover:bg-soft"
+              className="overflow-hidden rounded-xl border border-line text-left hover:border-foreground"
             >
-              <span className="text-xs font-medium text-muted">PDF</span>
-              <span className="line-clamp-3 text-sm font-medium leading-snug">
+              <div className="relative aspect-video bg-soft">
+                {d.thumb ? (
+                  // 첫 페이지 미리보기 (data URL이라 next/image를 쓰지 않는다)
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={d.thumb} alt="" className="h-full w-full object-cover object-top" />
+                ) : (
+                  <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-muted">
+                    PDF
+                  </span>
+                )}
+              </div>
+              <span className="line-clamp-2 block p-3 text-sm font-medium leading-snug">
                 {d.analysis.title || d.name}
               </span>
             </button>

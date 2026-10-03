@@ -26,6 +26,7 @@ export type StoredDoc = {
   name: string; // 파일 이름
   createdAt: number;
   pdf: Blob;
+  thumb?: string; // 첫 페이지 미리보기 (JPEG data URL). 이전 버전 문서에는 없다
   analysis: Analysis;
   concepts: Concept[] | null;
   flashcards: Flashcard[] | null;
