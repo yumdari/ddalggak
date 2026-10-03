@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 Day = Literal["월", "화", "수", "목", "금"]
 Style = Literal[
@@ -37,12 +37,13 @@ class Profile(StrictModel):
     semester: int = Field(default=1, ge=1, le=2)
     earned_credits: int = Field(default=30, ge=0, le=300)
     gpa: float = Field(default=3.5, ge=0, le=4.5)
+    careers: list[str] | None = Field(default=None, max_length=3)
     career: str = Field(default="Embedded Software", max_length=100)
     interests: str = Field(default="", max_length=300)
     career_confidence: int = Field(default=80, ge=0, le=100)
     learning: Preferences = Field(default_factory=Preferences)
     campus: CampusLife = Field(default_factory=CampusLife)
-    completed_ids: list[str] = Field(default_factory=list, max_length=50)
+    completed_ids: list[str] | None = Field(default_factory=list, max_length=50)
     required_ids: list[str] = Field(default_factory=list, max_length=25)
     free_days: list[Day] = Field(default_factory=list, max_length=5)
     preferred_days: list[Day] = Field(default_factory=list, max_length=5)
@@ -56,6 +57,19 @@ class Profile(StrictModel):
     return_term: str = Field(default="", max_length=40)
     mbti: str = Field(default="", max_length=4)
     gender: str = Field(default="", max_length=30)
+
+
+    @field_validator("careers")
+    @classmethod
+    def validate_careers(cls, value):
+        if value is None:
+            return value
+        value = [v.strip() for v in value]
+        if any(not v or len(v) > 100 for v in value) or len(set(value)) != len(value):
+            raise ValueError("진로는 중복 없이 1~100자로 입력하세요.")
+        if "아직 모름" in value and len(value) > 1:
+            raise ValueError("아직 모름은 다른 진로와 함께 선택할 수 없습니다.")
+        return value
 
 
 class Meeting(StrictModel):
@@ -101,6 +115,7 @@ class Course(StrictModel):
 
 class RecommendRequest(StrictModel):
     profile: Profile
+    custom_courses: list[Course] = Field(default_factory=list, max_length=10)
     successful_ids: list[str] = Field(default_factory=list, max_length=25)
     failed_ids: list[str] = Field(default_factory=list, max_length=25)
     current_ids: list[str] = Field(default_factory=list, max_length=25)

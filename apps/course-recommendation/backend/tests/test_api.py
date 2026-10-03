@@ -70,3 +70,19 @@ def test_ai_evidence_selection_and_fallback(monkeypatch, mode):
     assert result["recommendations"][0]["score"] == base["recommendations"][0]["score"]
     if mode != "valid":
         assert result == base
+
+
+def test_multi_career_and_uploaded_syllabus_api_contract():
+    from app.engine import load_courses
+    course = load_courses()[0].model_dump()
+    course.update(course_id="upload-api-test", name="직접 올린 수업")
+    body = {"profile": {"careers": ["Backend", "Embedded Software", "Data"], "completed_ids": None, "required_ids": [course["course_id"]]}, "custom_courses": [course]}
+    response = client.post("/api/recommend", json=body)
+    assert response.status_code == 200
+    row = next(r for r in response.json()["recommendations"] if r["course"]["course_id"] == course["course_id"])
+    assert all(value == 50 for part, value in row["score"]["parts"].items() if part != "schedule")
+    body["profile"]["careers"].append("Frontend")
+    assert client.post("/api/recommend", json=body).status_code == 422
+    body["profile"]["careers"].pop()
+    course["schedule"][0]["end"] = course["schedule"][0]["start"]
+    assert client.post("/api/recommend", json=body).status_code == 422

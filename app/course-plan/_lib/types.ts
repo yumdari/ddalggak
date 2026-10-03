@@ -3,15 +3,16 @@ export type LearningKey = "memorization" | "problem_solving" | "essay" | "team_p
 export type CampusKey = "social" | "discussion" | "exploration" | "quiet";
 export type Profile = {
   school: string; major: string; year: number; semester: number; earned_credits: number; gpa: number;
-  career: string; interests: string; career_confidence: number; learning: Record<LearningKey, number>;
-  campus: Record<CampusKey, number>; completed_ids: string[]; required_ids: string[];
-  free_days: Day[]; preferred_days: Day[]; avoided_days: Day[]; time_preference: "any" | "morning" | "afternoon";
+  careers: string[]; learning: Record<LearningKey, number>;
+  campus: Record<CampusKey, number>; completed_ids: null; required_ids: string[];
+  free_days: Day[]; preferred_days: Day[]; time_preference: "any" | "morning" | "afternoon";
   compact_days: boolean; max_credits: number; military_status: "none" | "completed" | "planned" | "undecided";
   service_start: string; service_months: number; return_term: string; mbti: string; gender: string;
 };
 export type Course = {
   course_id: string; name: string; credits: number; category: string; professor: string;
   schedule: { day: Day; start: number; end: number }[]; prerequisites: string[]; syllabus: string;
+  learning_style?: Record<LearningKey, number>; campus_life?: Record<CampusKey, number>; career_tags?: string[]; recommended_year?: number;
   assessment: { exam: number; assignment: number; project: number; participation: number };
 };
 export type Score = { total: number; parts: Record<"career" | "learning" | "assessment" | "schedule" | "campus" | "academic", number> };
