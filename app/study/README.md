@@ -13,8 +13,8 @@
 ## 환경변수 (`.env.local`)
 
 - `AI_PROVIDER`: `gemini`(기본) 또는 `claude`
-- `GEMINI_API_KEY` / `GEMINI_MODEL`: 모델명은 AI Studio에서 쓸 수 있는 것으로 (기본 `gemini-3.5-flash`)
-- `GEMINI_API_KEYS`: 키를 쉼표로 여러 개 넣으면 한도·과부하 시 순서대로 넘어간다 (모델 → 키 순서로 시도, 하루 한도가 찬 조합은 30분간 건너뜀). 서로 다른 구글 프로젝트의 키여야 한도가 따로 계산된다. 키는 `.env.local`/배포 환경변수에만 넣는다.
+- `GEMINI_MODEL`: 모델명은 AI Studio에서 쓸 수 있는 것으로 (기본 `gemini-3.5-flash`)
+- `GEMINI_API_KEYS`: **모든 서비스가 함께 쓰는 공통 키 목록**이다. 쉼표로 여러 개 넣으면 요청마다 돌려 쓰고, 한도·과부하·잘못된 키이면 다음 키로 넘어간다 (공통 모듈 `lib/gemini.ts`). 이 서비스는 모델 → 키 순서로 시도하고, 하루 한도가 찬 조합은 30분간 건너뛴다. 서로 다른 구글 프로젝트의 키여야 한도가 따로 계산된다. 키는 `.env.local`/배포 환경변수에만 넣는다. 예전 `GEMINI_API_KEY`(키 하나)도 읽는다.
 - `GEMINI_FALLBACK_MODELS`: 기본 모델이 붐비면(503·429) 순서대로 넘어갈 대체 모델 (쉼표로 구분, 기본 `gemini-3.8-flash,gemini-3.6-flash,gemini-3.1-flash-lite`)
 - `ANTHROPIC_API_KEY` / `ANTHROPIC_MODEL`: `AI_PROVIDER=claude`일 때
 - `MOCK_AI=1`: AI를 호출하지 않고 샘플 데이터로 화면만 확인. **실제 키를 쓸 때는 반드시 지울 것.**
