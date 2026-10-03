@@ -1,0 +1,17 @@
+/* 플래시카드 뒤집기 효과 (study 전용) */
+.flip-scene {
+  perspective: 1200px;
+}
+.flip-card {
+  transition: transform 0.45s;
+  transform-style: preserve-3d;
+}
+.flip-card[data-flipped="true"] {
+  transform: rotateY(180deg);
+}
+.flip-face {
+  backface-visibility: hidden;
+}
+.flip-back {
+  transform: rotateY(180deg);
+}
