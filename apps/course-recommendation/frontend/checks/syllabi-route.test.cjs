@@ -14,7 +14,7 @@ function route(keys, respond, env = {}) {
   const calls = [];
   class GoogleGenAI { constructor({apiKey}) { this.models={generateContent:async args=>{calls.push(apiKey);assert.equal(args.config.responseMimeType,'application/json');return respond(apiKey,ApiError,args.model);}}; } }
   const environment = {env:{GEMINI_API_KEYS:keys,...env}};
-  const sdk = {GoogleGenAI,ApiError};
+  const sdk = {GoogleGenAI,ApiError,ThinkingLevel:{MINIMAL:"minimal"}};
   const helperExports = {};
   const helperSource = ts.transpileModule(fs.readFileSync(path.join(root,'lib/gemini.ts'),'utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
   vm.runInNewContext(helperSource, {exports:helperExports, require:()=>sdk, process:environment, console, Math:Object.assign(Object.create(Math),{random:()=>0})});
@@ -60,4 +60,17 @@ test('quota, authentication, unavailable model and timeout have actionable error
     const r=route('key',(_,ErrorType)=>{throw new ErrorType(upstream);});const response=await r.post(request());assert.equal(response.status,status);assert.equal((await response.json()).code,code);
   }
   const r=route('key',()=>{throw new DOMException('timeout','TimeoutError');});const response=await r.post(request());assert.equal(response.status,504);assert.equal((await response.json()).code,'GEMINI_TIMEOUT');
+});
+
+test('a timed out model falls back and keeps the Saturday class time',async()=>{
+  const models=[];
+  const r=route('key',(_,ErrorType,model)=>{
+    models.push(model);
+    if(models.length===1)throw new DOMException('timeout','TimeoutError');
+    return {text:JSON.stringify({courses:[{...course,schedule:[{day:'토',start:660,end:780}]}]})};
+  });
+  const response=await r.post(request());
+  assert.equal(response.status,200);
+  assert.deepEqual(models,['gemini-3.8-flash','gemini-3.5-flash-lite']);
+  assert.deepEqual((await response.json()).courses[0].schedule,[{day:'토',start:660,end:780}]);
 });

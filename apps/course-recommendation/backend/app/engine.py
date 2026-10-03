@@ -234,7 +234,7 @@ def recommend(request: RecommendRequest) -> dict:
         "recommendations": rows,
         "total_credits": total,
         "max_credits": p.max_credits,
-        "free_days": [d for d in ["월", "화", "수", "목", "금"] if d not in occupied],
+        "free_days": [d for d in ["월", "화", "수", "목", "금", "토", "일"] if d not in occupied],
         "warnings": warnings,
         "excluded": excluded,
         "weights": WEIGHTS,

@@ -194,3 +194,19 @@ def test_uploaded_course_is_required_and_survives_recovery():
     assert any("업로드 수업" in w for w in blocked["warnings"])
     with pytest.raises(ValueError):
         recommend(RecommendRequest(profile=p, custom_courses=[course, course]))
+
+
+def test_weekend_upload_obeys_conflicts_and_free_days():
+    from app.models import Course
+
+    data = load_courses()[0].model_dump()
+    data.update(course_id="upload-weekend", schedule=[{"day": "토", "start": 660, "end": 780}])
+    course = Course.model_validate(data)
+    p = Profile(required_ids=[course.course_id], completed_ids=None)
+    result = recommend(RecommendRequest(profile=p, custom_courses=[course]))
+    assert any(r["course"]["course_id"] == course.course_id for r in result["recommendations"])
+    assert "토" not in result["free_days"]
+    assert conflicts(course, course)
+    p.free_days = ["토"]
+    blocked = recommend(RecommendRequest(profile=p, custom_courses=[course]))
+    assert all(r["course"]["course_id"] != course.course_id for r in blocked["recommendations"])

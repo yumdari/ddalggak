@@ -135,3 +135,41 @@ test("syllabus endpoint rejects invalid files before AI calls", async ({ request
   const wrongType = await request.post("/course-plan/api/syllabi", {multipart:{file:{name:"notes.txt",mimeType:"text/plain",buffer:Buffer.from("hello")}}});
   expect(wrongType.status()).toBe(400);
 });
+
+test("PDF progress, retry and optional skip preserve the intended selection", async ({ page }) => {
+  let releaseSecond!: () => void;
+  const secondReady = new Promise<void>(resolve => { releaseSecond=resolve; });
+  let thirdAttempts=0;
+  await page.route("**/course-plan/api/syllabi", async route => {
+    const body=route.request().postDataBuffer()!;
+    const number=body.includes(Buffer.from("second.pdf"))?2:body.includes(Buffer.from("third.pdf"))?3:1;
+    if(number===2) await secondReady;
+    if(number===3&&thirdAttempts++===0) return route.fulfill({status:504,json:{detail:"AI 응답 지연"}});
+    await route.fulfill({json:{courses:[{name:`과목 ${number}`,credits:2,professor:"교수",category:"전공선택",syllabus:"숨겨진 요약",schedule:[{day:"토",start:660,end:780}]}]}});
+  });
+  await page.goto("/course-plan");
+  await page.getByRole("button",{name:"내 수강전략 만들기"}).click();
+  for(let i=0;i<4;i++) await page.getByRole("button",{name:"다음 질문"}).click();
+  const chooserEvent=page.waitForEvent("filechooser");
+  await page.getByRole("button",{name:"PDF 파일 선택",exact:true}).click();
+  const chooser=await chooserEvent;
+  await chooser.setFiles(["first","second","third"].map(name=>({name:`${name}.pdf`,mimeType:"application/pdf",buffer:Buffer.from("%PDF-1.4 test")})));
+  await expect(page.getByRole("status")).toContainText("2/3번째 파일 분석 중: second.pdf");
+  await expect(page.getByRole("progressbar")).toHaveAttribute("value","1");
+  await expect(page.getByRole("button",{name:"PDF 분석 중…"})).toBeDisabled();
+  await expect(page.getByRole("button",{name:"선택 없이 다음으로"})).toBeDisabled();
+  await expect(page.getByLabel("과목명",{exact:true})).toHaveValue("과목 1");
+  releaseSecond();
+  await expect(page.getByRole("status")).toContainText("3/3개 처리 · 성공 2개 · 실패 1개");
+  await page.getByRole("button",{name:"실패한 파일 1개 다시 분석"}).click();
+  await expect(page.getByLabel("과목명",{exact:true})).toHaveCount(3);
+  await expect(page.getByText("숨겨진 요약",{exact:true})).toHaveCount(0);
+  await expect(page.getByLabel("요일",{exact:true}).first()).toHaveValue("토");
+  await expect(page.getByLabel("시작",{exact:true}).first()).toHaveValue("11:00");
+  await page.getByRole("button",{name:"꼭 듣고 싶은 과목",exact:true}).first().click();
+  await page.getByRole("button",{name:"선택 없이 다음으로"}).click();
+  const submitted=page.waitForRequest(req=>req.url().endsWith("/api/recommend"));
+  await page.getByRole("button",{name:"내 추천 확인하기"}).click();
+  expect((await submitted).postDataJSON()).toMatchObject({profile:{required_ids:[]},custom_courses:[]});
+  await expect(page.getByRole("heading",{name:"이번 학기, 너의 다음 선택."})).toBeVisible();
+});

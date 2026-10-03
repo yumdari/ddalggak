@@ -1,4 +1,4 @@
-export type Day = "월" | "화" | "수" | "목" | "금";
+export type Day = "월" | "화" | "수" | "목" | "금" | "토" | "일";
 export type LearningKey = "memorization" | "problem_solving" | "essay" | "team_project" | "presentation" | "project" | "exam" | "practice";
 export type CampusKey = "social" | "discussion" | "exploration" | "quiet";
 export type Profile = {
