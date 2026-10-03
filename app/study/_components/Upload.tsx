@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { MAX_PDF_MB } from "@/app/study/_lib/limits";
 
 export const NOTICE = "AI가 만든 내용은 틀릴 수 있어요. 중요한 내용은 원문에서 꼭 확인하세요.";
 
@@ -50,7 +51,7 @@ export default function Upload({ loadingName, error, onFile, onSample }: Props) 
             }`}
           >
             <p className="text-lg font-medium">PDF를 끌어다 놓거나 눌러서 선택</p>
-            <p className="mt-2 text-sm text-muted">4MB 이하의 PDF 파일</p>
+            <p className="mt-2 text-sm text-muted">{MAX_PDF_MB}MB 이하의 PDF 파일</p>
           </button>
 
           <button

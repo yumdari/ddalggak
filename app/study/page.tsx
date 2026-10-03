@@ -104,7 +104,7 @@ export default function Home() {
 
         <section className="bg-soft px-5 py-20 text-center">
           <h2 className="text-2xl font-bold sm:text-3xl">지금 바로 시작하세요</h2>
-          <p className="mt-3 text-muted">PDF 한 개면 충분해요. 4MB 이하의 강의자료를 올려 보세요.</p>
+          <p className="mt-3 text-muted">PDF 한 개면 충분해요. 3MB 이하의 강의자료를 올려 보세요.</p>
           <Link
             href="/study/workspace"
             className="mt-7 inline-block rounded-full bg-foreground px-8 py-4 text-base font-medium text-background"

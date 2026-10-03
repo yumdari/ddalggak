@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { MAX_PDF_BYTES, MAX_PDF_MB } from "@/app/study/_lib/limits";
 import { deleteDoc, listDocs, saveDoc } from "@/app/study/_lib/store";
 import { firstPageThumb } from "@/app/study/_lib/thumbnail";
 import type { Analysis, StoredDoc } from "@/app/study/_lib/types";
@@ -9,7 +10,6 @@ import DocView from "./DocView";
 import Library from "./Library";
 import Upload from "./Upload";
 
-const MAX_BYTES = 4 * 1024 * 1024;
 const SAMPLE_URL = "/study/sample.pdf";
 
 type OpenDoc = { doc: StoredDoc; pdfUrl: string; pdfBase64: string };
@@ -80,8 +80,8 @@ export default function Workspace() {
       setError("PDF 파일만 올릴 수 있어요.");
       return;
     }
-    if (file.size > MAX_BYTES) {
-      setError("4MB 이하의 PDF만 올릴 수 있어요.");
+    if (file.size > MAX_PDF_BYTES) {
+      setError(`${MAX_PDF_MB}MB 이하의 PDF만 올릴 수 있어요.`);
       return;
     }
 
