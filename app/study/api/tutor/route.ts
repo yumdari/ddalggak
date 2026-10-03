@@ -6,9 +6,10 @@ import type { ChatMessage } from "@/app/study/_lib/types";
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const { pdfBase64, messages } = (await req.json()) as {
+  const { pdfBase64, messages, mode } = (await req.json()) as {
     pdfBase64?: string;
     messages?: ChatMessage[];
+    mode?: string;
   };
 
   if (!pdfBase64 || !messages?.length || messages[0].role !== "user") {
@@ -19,7 +20,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    return Response.json({ reply: await askTutor(pdfBase64, messages) });
+    return Response.json({ reply: await askTutor(pdfBase64, messages, mode === "deep" ? "deep" : "quick") });
   } catch (e) {
     return errorResponse(e);
   }

@@ -1,6 +1,6 @@
 import { ApiError, GoogleGenAI, ThinkingLevel } from "@google/genai";
 import { MissingKeyError, UnusableOutputError } from "../errors";
-import { TUTOR_SYSTEM, type JsonTask } from "../prompts";
+import { tutorSystem, type JsonTask, type TutorMode } from "../prompts";
 import type { ChatMessage } from "../types";
 
 // 사용 가능한 모델명과 무료 한도는 AI Studio에서 확인하고 GEMINI_MODEL로 바꾼다
@@ -73,7 +73,11 @@ export async function json(pdfBase64: string, task: JsonTask): Promise<unknown> 
   return JSON.parse(text);
 }
 
-export async function tutor(pdfBase64: string, messages: ChatMessage[]): Promise<string> {
+export async function tutor(
+  pdfBase64: string,
+  messages: ChatMessage[],
+  mode: TutorMode,
+): Promise<string> {
   // PDF는 첫 질문에만 붙이고, 이후 대화는 텍스트만 이어 붙인다
   const [first, ...rest] = messages;
   const response = await generate({
@@ -86,7 +90,7 @@ export async function tutor(pdfBase64: string, messages: ChatMessage[]): Promise
       })),
     ],
     config: {
-      systemInstruction: TUTOR_SYSTEM,
+      systemInstruction: tutorSystem(mode),
       maxOutputTokens: 4000,
       thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
     },

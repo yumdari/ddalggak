@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { MissingKeyError, UnusableOutputError } from "../errors";
-import { TUTOR_SYSTEM, type JsonTask } from "../prompts";
+import { tutorSystem, type JsonTask, type TutorMode } from "../prompts";
 import type { ChatMessage } from "../types";
 
 const MODEL = process.env.ANTHROPIC_MODEL ?? "claude-opus-5-5";
@@ -48,14 +48,18 @@ export async function json(pdfBase64: string, task: JsonTask): Promise<unknown> 
   return JSON.parse(textOf(response.content));
 }
 
-export async function tutor(pdfBase64: string, messages: ChatMessage[]): Promise<string> {
+export async function tutor(
+  pdfBase64: string,
+  messages: ChatMessage[],
+  mode: TutorMode,
+): Promise<string> {
   // PDF는 첫 질문에만 붙이고, 이후 대화는 텍스트만 이어 붙인다
   const [first, ...rest] = messages;
   const response = await getClient().messages.create({
     model: MODEL,
     max_tokens: 4000,
     output_config: { effort: "low" },
-    system: TUTOR_SYSTEM,
+    system: tutorSystem(mode),
     messages: [
       {
         role: "user",

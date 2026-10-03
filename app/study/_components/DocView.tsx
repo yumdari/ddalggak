@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Concept, Flashcard, QuizItem, StoredDoc } from "@/app/study/_lib/types";
 import Concepts from "./Concepts";
+import DocRail from "./DocRail";
 import DocSidebar from "./DocSidebar";
 import Flashcards from "./Flashcards";
 import LazyPanel, { type LoadState } from "./LazyPanel";
@@ -64,10 +65,8 @@ export default function DocView({
   const [tab, setTab] = useState<Tab>("요약");
   const [page, setPage] = useState<{ n: number; jump: number } | null>(null);
   const [showPdf, setShowPdf] = useState(false); // 좁은 화면에서 원본 보기
-  // 넓은 화면에서는 처음부터 열어 두고, 좁은 화면에서는 닫아 둔다
-  const [sidebarOpen, setSidebarOpen] = useState(
-    () => typeof window !== "undefined" && window.innerWidth >= 1024,
-  );
+  // 문서 목록 패널. 처음에는 닫아 두고 왼쪽 레일(넓은 화면)이나 ☰(좁은 화면)로 연다
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const closeOnMobile = () => {
     if (window.innerWidth < 1024) setSidebarOpen(false);
   };
@@ -122,6 +121,11 @@ export default function DocView({
 
   return (
     <div className="flex h-dvh">
+      <DocRail
+        listOpen={sidebarOpen}
+        onToggleList={() => setSidebarOpen((v) => !v)}
+        onNew={onNew}
+      />
       {sidebarOpen && (
         <DocSidebar
           docs={docs}
@@ -139,25 +143,29 @@ export default function DocView({
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center gap-3 border-b border-line px-4 py-3 text-sm">
-          <button
-            onClick={() => setSidebarOpen((v) => !v)}
-            aria-label="문서 목록 열기·닫기"
-            aria-expanded={sidebarOpen}
-            className="shrink-0 rounded-md px-1.5 py-1 text-base leading-none text-muted hover:bg-soft hover:text-foreground"
-          >
-            ☰
-          </button>
-          <button onClick={onBack} className="shrink-0 text-muted hover:text-foreground">
-            ← 내 문서
-          </button>
-          <span className="min-w-0 flex-1 truncate font-medium">{title}</span>
-          <button
-            onClick={() => setShowPdf((v) => !v)}
-            className="shrink-0 rounded-full bg-soft px-3 py-1.5 text-xs font-medium lg:hidden"
-          >
-            {showPdf ? "학습 화면" : "원본 보기"}
-          </button>
+        <header className="grid grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-line px-4 py-3 text-sm">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSidebarOpen((v) => !v)}
+              aria-label="문서 목록 열기·닫기"
+              aria-expanded={sidebarOpen}
+              className="shrink-0 rounded-md px-1.5 py-1 text-base leading-none text-muted hover:bg-soft hover:text-foreground lg:hidden"
+            >
+              ☰
+            </button>
+            <button onClick={onBack} className="shrink-0 hover:text-muted">
+              ← 돌아가기
+            </button>
+          </div>
+          <span className="min-w-0 truncate text-center font-bold">{title}</span>
+          <div className="flex min-w-16 justify-end">
+            <button
+              onClick={() => setShowPdf((v) => !v)}
+              className="shrink-0 rounded-full bg-soft px-3 py-1.5 text-xs font-medium lg:hidden"
+            >
+              {showPdf ? "학습 화면" : "원본 보기"}
+            </button>
+          </div>
         </header>
 
         <div className="grid min-h-0 flex-1 lg:grid-cols-2">
@@ -173,20 +181,23 @@ export default function DocView({
           </div>
 
           <div className={`${showPdf ? "hidden" : "flex"} min-h-0 min-w-0 flex-col lg:flex`}>
-            <nav className="flex gap-2 overflow-x-auto border-b border-line px-4 py-3">
-              {TABS.map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setTab(t)}
-                  className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm ${
-                    tab === t
-                      ? "bg-foreground font-medium text-background"
-                      : "bg-soft text-muted hover:text-foreground"
-                  }`}
-                >
-                  {t}
-                </button>
-              ))}
+            <nav className="overflow-x-auto px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div className="mx-auto flex w-max gap-1">
+                {TABS.map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setTab(t)}
+                    aria-current={tab === t ? "page" : undefined}
+                    className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm ${
+                      tab === t
+                        ? "bg-foreground font-medium text-background"
+                        : "hover:bg-soft"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
             </nav>
 
             <div className="min-h-0 flex-1 overflow-y-auto">

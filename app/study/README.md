@@ -6,7 +6,7 @@
 
 - `page.tsx` 서비스 소개 · `workspace/page.tsx` 작업 화면 (내 문서 목록 → 업로드 → 문서 보기)
 - `api/analyze` PDF → 요약(쪽수 근거 포함) · `api/generate` 핵심 개념/플래시카드(요청 시 생성) · `api/quiz` 퀴즈(문항 수·힌트) · `api/tutor` 자료 기반 질의응답 (모두 구조화 JSON 출력)
-- `_components/` 화면 (`Workspace` 흐름 제어, `Library` 목록, `Upload`, `DocView` 문서 보기와 탭, `DocSidebar` 문서 이동)
+- `_components/` 화면 (`Workspace` 흐름 제어, `Library` 목록, `Upload`, `DocView` 문서 보기와 탭, `DocRail` 왼쪽 아이콘 레일, `DocSidebar` 문서 이동, `Tutor` AI 튜터)
 - `_lib/store.ts` 브라우저 저장(IndexedDB) · `_lib/thumbnail.ts` PDF 첫 페이지 미리보기(pdf.js)
 - `_lib/ai.ts` 제공자 선택 · `_lib/providers/{gemini,claude}.ts` 호출 구현 · `_lib/prompts.ts` 프롬프트와 스키마
 
