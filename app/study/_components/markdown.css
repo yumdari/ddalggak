@@ -1,0 +1,25 @@
+/* 마크다운 렌더링 스타일 (study 전용). Tailwind가 기본 목록·제목 스타일을 지우므로 다시 정한다 */
+.md > :first-child { margin-top: 0; }
+.md > :last-child { margin-bottom: 0; }
+.md p { margin: 0.6em 0; line-height: 1.75; }
+.md strong { font-weight: 700; }
+.md ul, .md ol { margin: 0.6em 0; padding-left: 1.4em; }
+.md ul { list-style: disc; }
+.md ol { list-style: decimal; }
+.md li { margin: 0.3em 0; line-height: 1.75; }
+.md li > ul, .md li > ol { margin: 0.3em 0; }
+.md h1, .md h2, .md h3, .md h4 { font-weight: 700; line-height: 1.4; margin: 1.1em 0 0.5em; }
+.md h1 { font-size: 1.4em; }
+.md h2 { font-size: 1.2em; }
+.md h3 { font-size: 1.1em; }
+.md blockquote { margin: 0.8em 0; padding: 0.5em 1em; border-left: 3px solid var(--foreground); background: var(--soft); border-radius: 0 0.5em 0.5em 0; }
+.md blockquote p { margin: 0.2em 0; }
+.md code { font-family: var(--font-geist-mono, ui-monospace, monospace); font-size: 0.9em; background: var(--soft); padding: 0.1em 0.35em; border-radius: 0.3em; }
+.md pre { margin: 0.8em 0; padding: 0.9em 1em; background: var(--soft); border-radius: 0.6em; overflow-x: auto; }
+.md pre code { background: none; padding: 0; }
+.md table { margin: 0.8em 0; border-collapse: collapse; display: block; overflow-x: auto; font-size: 0.95em; }
+.md th, .md td { border: 1px solid var(--line); padding: 0.4em 0.8em; text-align: left; }
+.md th { background: var(--soft); font-weight: 700; }
+.md hr { margin: 1em 0; border: 0; border-top: 1px solid var(--line); }
+.md a { text-decoration: underline; text-underline-offset: 3px; }
+.md .katex-display { margin: 0.8em 0; overflow-x: auto; overflow-y: hidden; }
