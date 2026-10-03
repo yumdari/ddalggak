@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { ApiError } from "@google/genai";
-import { isDailyQuota } from "./providers/gemini";
+import { isDailyQuota } from "@/lib/gemini";
 
 // 모델이 답을 거부했거나 중간에 잘려서 쓸 수 없는 경우
 export class UnusableOutputError extends Error {}
